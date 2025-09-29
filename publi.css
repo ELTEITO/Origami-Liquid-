@@ -1,0 +1,242 @@
+/* =======================
+   Publi iPhone 17 - CSS
+   Encapsulado para evitar choques
+   ======================= */
+
+/* Variables y layout general de la página */
+:root{
+  --nav-h: 92px;                 /* ajusta si tu navbar es más alto */
+  --footer-h: 340px;             /* ajusta según tu footer real */
+  --wrap-w: 1100px;
+  --gap: 28px;
+  --r-lg: 24px;
+  --r-md: 16px;
+
+  /* Glass */
+  --glass-bg: rgba(255,255,255,.10);
+  --glass-bd: rgba(255,255,255,.20);
+  --glass-bg-strong: rgba(255,255,255,.16);
+  --glass-bd-strong: rgba(255,255,255,.28);
+  --text-muted: rgba(255,255,255,.80);
+}
+
+/* Empuja el footer al fondo sin “página larga” */
+body{ min-height:100vh; display:flex; flex-direction:column; }
+.publi-wrap{ flex:1; }
+
+/* ---------- Contenedor principal ---------- */
+/* columna de imagen más ancha y alta */
+.publi-wrap{
+  width:min(var(--wrap-w),92%);
+  margin: calc(var(--nav-h) + 24px) auto 24px;
+  display:grid;
+  grid-template-columns: 720px 1fr;   /* ancho real para la foto */
+  gap: var(--gap);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: visible;
+}
+.publi-media{
+  min-height: 680px;
+  border-radius:18px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background: rgba(255,255,255,.06);
+}
+.publi-media img{
+  display:block;
+  max-width:100%;
+  max-height:680px;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
+@media (max-width:1100px){
+  .publi-wrap{ grid-template-columns: 520px 1fr; }
+  .publi-media{ min-height:520px; }
+  .publi-media img{ max-height:520px; }
+}
+  .publi-wrap{ grid-template-columns: 520px 1fr; }
+  .publi-media{ min-height: 520px; }
+  .publi-media img{ max-height: 520px; }
+
+
+/* Base glass por si tu tema no lo aplica aquí */
+.publi-wrap.glass-effect{
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Hover “glass glow” de todo el bloque */
+.publi-wrap:hover{
+  box-shadow: 0 18px 48px rgba(0,0,0,.38);
+}
+
+
+
+/* ---------- Columna de info ---------- */
+.publi-info{
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.publi-title{
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+
+/* ---------- Paneles ---------- */
+.publi-panel{
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  backdrop-filter: blur(12px) saturate(140%);
+  border-radius: var(--r-md);
+  padding: 16px;
+  position: relative; isolation: isolate;  z-index: 3;
+}
+.publi-label{
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  opacity: .95;
+}
+.publi-help{
+  font-size: .9rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.publi-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;                      /* respiración uniforme */
+  position: relative; z-index: 4;
+}
+
+/* ---------- Normalización de botones sólo dentro de la Publi ---------- */
+.publi-wrap button{
+  -webkit-appearance: none;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Swatches de color ---------- */
+/* mapa por data-color para no depender de --c inline */
+.publi-swatch[data-color="White"]{ background:#f2f2f2; }
+.publi-swatch[data-color="Black"]{ background:#0b0b0c; }
+.publi-swatch[data-color="Blue"] { background:#3b82f6; }
+.publi-swatch[data-color="Pink"] { background:#ff80ab; }
+.publi-swatch[data-color="Green"]{ background:#22c55e; }
+.publi-swatch:hover{ transform: translateY(-2px); }
+.publi-swatch.is-active{
+  box-shadow: 0 0 0 2px rgba(255,255,255,.35), 0 0 22px rgba(255,255,255,.18);
+}
+
+/* ampliar zona de click sin cambiar lo visual */
+.publi-swatch{ position: relative; }
+.publi-swatch::after{
+  content:""; position:absolute; inset:-6px; border-radius:18px;
+}
+
+
+/* ---------- Opciones (capacidad y qty) ---------- */
+.publi-opt{
+  min-width: 150px;           /* ancho fijo y parejo */
+  height: 54px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 900;
+  border:1px solid var(--glass-bd-strong);
+  background: var(--glass-bg-strong);
+  display:flex; align-items:center; justify-content:center;
+  padding:0; line-height:1;
+}
+.publi-opt:hover{ transform: translateY(-2px); }
+.publi-opt.is-active{
+  background: rgba(255,255,255,.24);
+  border-color: rgba(255,255,255,.45);
+  box-shadow: 0 10px 26px rgba(0,0,0,.28), 0 0 22px rgba(255,255,255,.18);
+}
+
+/* Cantidad */
+.publi-qty{ align-items: center; }
+.publi-qty .publi-opt{ min-width: 64px; }
+.publi-qty #qty{
+  min-width: 2ch;
+  text-align: center;
+  font-weight: 900;
+}
+
+/* ---------- Precio + CTA ---------- */
+.publi-price-cta{
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.publi-price{
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+.publi-small{ font-size: .95rem; opacity: .85; }
+
+/* Botón principal */
+.publi-btn{
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.16);
+  font-weight: 900;
+  transition: transform .12s, box-shadow .2s, background .2s, border-color .2s;
+}
+.publi-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 44px rgba(0,0,0,.35), 0 0 34px rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.42);
+}
+.publi-btn.primary{
+  background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.16));
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1100px){
+  .publi-wrap{ grid-template-columns: 460px 1fr; }
+  .publi-media{ min-height: 480px; }
+  .publi-media img{ max-height: 480px; }
+}
+@media (max-width: 980px){
+  .publi-wrap{ grid-template-columns: 1fr; }
+  .publi-media{ min-height: 420px; }
+  .publi-media img{ max-height: 420px; }
+}
+
+/* ---------- Accesibilidad: respeta reduce motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .publi-wrap *{ transition: none !important; }
+}
+
+/* Fade suave al cambiar la foto */
+.publi-media img{ transition:opacity .25s ease; }
+
+/* Mejor foco teclado */
+.publi-swatch:focus-visible,
+.publi-opt:focus-visible,
+.publi-btn:focus-visible{
+  outline:2px solid #fff8; outline-offset:2px;
+}
+
+/* Tipografía y separación más uniforme en los “cuadrados” */
+.publi-opt{ letter-spacing:.2px; }
+.publi-row{ gap:14px; }

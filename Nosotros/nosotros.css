@@ -1,0 +1,167 @@
+/* Esta hoja carga DESPUÉS de Liquid1.css para heredar el fondo / glass */
+:root{
+  --glass-blur: 30px;
+  --glass-opacity: 0.22;            /* más cuerpo */
+  --border-color: rgba(255,255,255,.38); /* líneas visibles */
+  --shadow-color: rgba(0,0,0,.45);  /* profundidad */
+  --text-muted: rgba(255,255,255,.88);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+
+  /* mismo fondo que en Liquid1.html */
+  background: url("https://assets.codepen.io/252820/unsplash-mountain3.webp") no-repeat center center fixed;
+  background-size: cover;
+
+  /* opcional: capa oscura encima */
+  color: #ffffff;
+}
+
+.page{
+  width: min(1100px, 92%);
+  margin: 90px auto 60px; /* separa de navbar fijo si existe */
+}
+
+h2{
+  text-align: center;
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+}
+
+p{ color: var(--text-muted); }
+
+/* Contenedor tipo “tarjeta de vidrio” */
+.glass{
+  background: rgba(255,255,255, var(--glass-opacity));
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.card-section{ margin-bottom: 22px; }
+
+/* ====== TEAM ====== */
+.team{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.member{
+  text-align: center;
+  position: relative;
+  padding: 14px 10px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+}
+
+.member__link{
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.avatar{
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 10px;
+  border: 1px solid var(--border-color);
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 8px 26px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.avatar img{
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+.role{
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.name{
+  font-weight: 600;
+  margin-top: .2rem;
+}
+
+/* ====== ABOUT ====== */
+#sobre-nosotros p{
+  max-width: 72ch;
+  margin: 0 auto;
+}
+
+/* ====== CONTACTO ====== */
+.contact-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.contact-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .7rem;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.07);
+}
+
+.icon{
+  font-size: 1.9rem;
+  opacity: .95;
+}
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .65rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform .15s ease, background-color .15s ease;
+}
+.btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.18); }
+
+/* Form email */
+.email-form{ width: 100%; display: flex; flex-direction: column; gap: .6rem; }
+.email-form label{ display: flex; flex-direction: column; gap: .35rem; text-align: left; }
+.email-form input,
+.email-form textarea{
+  width: 100%;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  padding: .6rem .7rem;
+}
+.email-form ::placeholder{ color: var(--text-muted); }
+
+/* ====== Responsive ====== */
+@media (max-width: 900px){
+  .team, .contact-grid{ grid-template-columns: 1fr 1fr; }
+  .avatar{ width: 140px; height: 140px; }
+}
+@media (max-width: 600px){
+  .team, .contact-grid{ grid-template-columns: 1fr; }
+  .page{ margin-top: 80px; }
+}
+
+/* footer a ancho completo en esta página */
+#footer-root { width: 100%; }
