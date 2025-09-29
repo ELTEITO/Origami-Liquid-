@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variantes - Origami Admin</title>
+  <link rel="stylesheet" href="../Liquid1.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar (componente) -->
+    <div id="sidebar-placeholder"></div>
+
+    <!-- Main Content -->
+    <script>
+      // Contador para evitar bucles infinitos
+      let retryCount = 0;
+      const maxRetries = 5;
+      let modalFunctionOverridden = false;
+
+      // Stub global inicial - muy simple
+      window.openVariantModal = function(id = null){
+        console.log('openVariantModal called with ID:', id);
+
+        // Si ya fue override por FormVariante, no hacer nada más
+        if (modalFunctionOverridden) {
+          console.log('Function was overridden, this should not execute');
+          return;
+        }
+
+        // Intentar FormVariante primero
+        if (window.formVariante && window.formVariante.openModal) {
+          console.log('Using FormVariante');
+          retryCount = 0;
+          return window.formVariante.openModal(id);
+        }
+
+        // Fallback al variants controller
+        if (window.variantsController && window.variantsController.openVariantModal) {
+          console.log('Using variants controller');
+          retryCount = 0;
+          return window.variantsController.openVariantModal(id);
+        }
+
+        // Reintento con límite
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retry ${retryCount}/${maxRetries}`);
+          setTimeout(() => window.openVariantModal(id), 300);
+        } else {
+          console.error('Failed to open variant modal after', maxRetries, 'attempts');
+          console.log('Available globals:', {
+            formVariante: !!window.formVariante,
+            variantsController: !!window.variantsController
+          });
+          alert('Error: No se pudo abrir el formulario de variantes. Por favor recarga la página.');
+        }
+      };
+
+      window.editVariant = function(id){
+        window.openVariantModal(id);
+      };
+
+      window.closeVariantModal = function(){
+        if (window.formVariante && window.formVariante.closeModal) {
+          return window.formVariante.closeModal();
+        }
+        if (window.variantsController && window.variantsController.closeVariantModal) {
+          return window.variantsController.closeVariantModal();
+        }
+      };
+    </script>
+    <main class="admin-main">
+      <div class="page-header">
+        <h1 class="page-title">Gestión de Variantes</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="refreshVariants()">
+            <i class="fa-solid fa-refresh"></i> Actualizar
+          </button>
+          <button class="btn btn-primary" onclick="openVariantModal()">
+            <i class="fa-solid fa-plus"></i> Nueva Variante
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="admin-card">
+        <div class="card-header">
+          <h3 class="card-title">Filtros</h3>
+        </div>
+        <div class="filters-row">
+          <div class="form-field">
+            <label>Producto</label>
+            <select id="productFilter">
+              <option value="">Todos los productos</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Tipo de Variante</label>
+            <select id="typeFilter">
+              <option value="">Todos los tipos</option>
+              <option value="color">Color</option>
+              <option value="storage">Almacenamiento</option>
+              <option value="size">Tamaño</option>
+              <option value="memory">Memoria RAM</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Buscar</label>
+            <input type="text" id="searchInput" placeholder="Buscar por nombre o valor...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Variants Table -->
+      <div class="admin-card">
+        <div class="card-header">
+          <h3 class="card-title">Lista de Variantes</h3>
+          <div class="table-info">
+            <span id="variantCount">0 variantes</span>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="admin-table" id="variantsTable">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Valor</th>
+                <th>Ajuste de Precio</th>
+                <th>Vista Previa</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="variantsTableBody">
+              <!-- Variants will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <!-- Pagination will be populated by JavaScript -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Include FormVariante Component -->
+  <script>
+    // Load FormVariante component
+    fetch('components/FormVariante.html')
+      .then(response => response.text())
+      .then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+        // Initialize FormVariante after component is loaded
+        if (window.FormVariante) {
+          window.formVariante = new FormVariante();
+        }
+      })
+      .catch(error => {
+        console.error('Error loading FormVariante component:', error);
+        // Fallback: try again after a short delay
+        setTimeout(() => {
+          fetch('components/FormVariante.html')
+            .then(response => response.text())
+            .then(html => {
+              document.body.insertAdjacentHTML('beforeend', html);
+            });
+        }, 1000);
+      });
+  </script>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Confirmar Eliminación</h3>
+        <button class="modal-close" onclick="closeDeleteModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <p>¿Estás seguro de que quieres eliminar esta variante? Esta acción no se puede deshacer.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+          <i class="fa-solid fa-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Cargar sidebar
+    fetch('components/sidebar.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('sidebar-placeholder').innerHTML = html;
+      })
+      .catch(error => console.error('Error loading sidebar:', error));
+  </script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/FormVariante.js"></script>
+  <script src="js/variants.js"></script>
+
+  <script>
+    // Background rotation
+    const backgroundImages = [
+      'https://assets.codepen.io/252820/unsplash-mountain3.webp',
+    ];
+
+    let currentImageIndex = 0;
+    const body = document.body;
+
+    function changeBackground() {
+      const nextImage = new Image();
+      const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+      nextImage.src = backgroundImages[nextImageIndex];
+
+      body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+      currentImageIndex = nextImageIndex;
+    }
+
+    changeBackground();
+    setInterval(changeBackground, 200);
+  </script>
+</body>
+</html>
