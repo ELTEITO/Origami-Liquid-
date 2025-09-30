@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preguntas Frecuentes | Origami</title>
+  <link rel="stylesheet" href="Liquid1.css">
+  <link rel="stylesheet" href="Footer/footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="faq-page">
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+  <script>
+    fetch("Navbar/navbar.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("navbar-placeholder").innerHTML = html; });
+  </script>
+
+  <main>
+    <div class="faq-wrap">
+    <section id="faq">
+      <!-- …tus 6 <details>… -->
+      <h2>Preguntas Frecuentes</h2>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Cómo realizo una compra?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Elegí el producto, añadilo al carrito y finalizá desde el resumen. Te confirmamos por WhatsApp o correo.
+        </div>
+      </details>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Qué medios de pago aceptan?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Efectivo, transferencia, tarjetas y USDT 1:1. Consultá promociones vigentes en el pie de página.
+        </div>
+      </details>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Hacen envíos?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Sí, a todo el país con seguro y seguimiento. Costos y tiempos según tu localidad.
+        </div>
+      </details>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Tienen garantía y devoluciones?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Productos nuevos con garantía según modelo. Cambios/devoluciones dentro del plazo indicado al momento de compra.
+        </div>
+      </details>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Puedo retirar en tienda?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Sí. Coordinamos fecha y horario una vez acreditado el pago. Traé tu comprobante.
+        </div>
+      </details>
+
+      <details class="glass-effect" style="margin-top:1rem; padding:1rem; border-radius:var(--medium-radius);">
+        <summary style="cursor:pointer; font-weight:600;">¿Cómo contacto soporte?</summary>
+        <div style="margin-top:.75rem; color:var(--text-muted-color);">
+          Desde el WhatsApp y redes del footer. Respondemos en horario comercial.
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <!-- Fondo y hooks opcionales ya usados en tu HTML -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const navItems = document.querySelectorAll('.bottom-nav__item');
+      navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (!this.classList.contains('bottom-nav__search-icon')) {
+            navItems.forEach(nav => {
+              if (!nav.classList.contains('bottom-nav__search-icon')) nav.classList.remove('active');
+            });
+            this.classList.add('active');
+          }
+        });
+      });
+
+      const backgroundImages = [
+        'https://assets.codepen.io/252820/unsplash-mountain3.webp'
+      ];
+      let currentImageIndex = 0;
+      const body = document.body;
+
+      function changeBackground() {
+        const nextImage = new Image();
+        const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+        nextImage.src = backgroundImages[nextImageIndex];
+        body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+        currentImageIndex = nextImageIndex;
+      }
+
+      changeBackground();
+      setInterval(changeBackground, 200);
+    });
+  </script>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("Footer/footer.html")
+      .then(r => r.text())
+      .then(html => { document.getElementById("footer-placeholder").innerHTML = html; });
+  </script>
+
+</body>
+</html>
