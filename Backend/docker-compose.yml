@@ -1,0 +1,113 @@
+version: "3.8"
+
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: origami_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - origami_network
+    restart: unless-stopped
+    # NO exponer puerto hacia afuera por seguridad
+    # ports:
+    #   - "5432:5432"
+
+  # Backend API Origami
+  backend:
+    build:
+      context: ./OrigamiBack
+      dockerfile: Dockerfile
+    container_name: origami_backend
+    environment:
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      - JwtSettings__Key=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER}
+      - JwtSettings__Audience=${JWT_AUDIENCE}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - CorsSettings__Origins=${CORS_ORIGINS}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - origami_network
+    restart: unless-stopped
+    expose:
+      - "80"
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Origami
+  frontend:
+    build:
+      context: ./Front
+      dockerfile: Dockerfile
+    container_name: origami_frontend
+    environment:
+      - REACT_APP_API_URL=${BACKEND_URL}
+      - REACT_APP_DOMAIN=${DOMAIN}
+    depends_on:
+      - backend
+    networks:
+      - origami_network
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  # Nginx Proxy Reverso
+  nginx:
+    image: nginx:alpine
+    container_name: origami_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/cache:/var/cache/nginx
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - origami_network
+    restart: unless-stopped
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis para caché (opcional)
+  redis:
+    image: redis:7-alpine
+    container_name: origami_redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - origami_network
+    restart: unless-stopped
+    expose:
+      - "6379"
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  origami_network:
+    driver: bridge
