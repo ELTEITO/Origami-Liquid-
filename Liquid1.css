@@ -74,6 +74,37 @@ body {
         inset 0 -1px 0 rgba(0,0,0,0.1);
     }
 
+    /* Navbar authentication styles */
+    .btn-login {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--nav-item-radius);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-login:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--active-text-color);
+      color: var(--active-text-color);
+    }
+
+    .btn-login__label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .btn-login__label {
+        display: none;
+      }
+    }
+
     header {
         position: fixed;
         top: 20px;
