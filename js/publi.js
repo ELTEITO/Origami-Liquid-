@@ -9,6 +9,7 @@ const fmt = (v) => "$" + v.toLocaleString("en-US");
 
 // Variables que se inicializarán cuando el DOM esté listo
 let img, priceEl, sumModel, sumRam, sumColor, sumCap, sumQty;
+let qtyHelpEl, plusBtn, minusBtn;
 
 let colorDelta = 0,
   capDelta = 0,
@@ -28,6 +29,9 @@ function calc() {
   // Mostrar stock si existe
   const stock = variant ? variant.Stock || variant.stock || 0 : 0;
   console.log("Precio:", unitPrice, "Stock:", stock);
+
+  // Enforce qty by stock and update UI state
+  enforceQtyByStock(stock);
 }
 
 // Obtener variante actual según selección
@@ -196,7 +200,9 @@ function setupEventListeners() {
     const b = e.target.closest(".publi-opt");
     if (!b) return;
     const op = b.dataset.q;
-    if (op === "+1") qty = Math.min(5, qty + 1);
+    const current = getCurrentVariant();
+    const stock = current ? current.Stock || current.stock || 0 : 0;
+    if (op === "+1") qty = Math.min(stock > 0 ? stock : 0, qty + 1);
     if (op === "-1") qty = Math.max(1, qty - 1);
     document.getElementById("qty").textContent = qty;
     sumQty.textContent = qty;
@@ -218,6 +224,49 @@ function setupEventListeners() {
     }
   });
 
+  // Agregar al carrito
+  const addBtn = document.getElementById('addToCartBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      const variant = getCurrentVariant();
+      if (!variant) {
+        alert('Seleccioná RAM, almacenamiento y color.');
+        return;
+      }
+      const stock = variant ? (variant.Stock || variant.stock || 0) : 0;
+      if (stock <= 0) {
+        alert('Sin stock disponible para esta variante.');
+        return;
+      }
+
+      const product = {
+        productId,
+        model: document.getElementById('publiModel')?.textContent || 'Producto',
+        ram: document.querySelector('#ramRow .publi-opt.is-active')?.dataset.ram || '',
+        storage: document.querySelector('#capRow .publi-opt.is-active')?.dataset.cap || '',
+        color: document.querySelector('.publi-swatch.is-active')?.dataset.color || '',
+        variantId: variant.Id || variant.id || `${productId}-${Date.now()}`,
+        unitPrice: variant.Precio || variant.precio || BASE,
+        qty: Math.max(1, Math.min(qty, stock)),
+        stock: Number(stock) || 0,
+        img: img?.src || ''
+      };
+
+      const key = 'cart_items';
+      const items = JSON.parse(localStorage.getItem(key) || '[]');
+      const idx = items.findIndex(x => x.variantId === product.variantId);
+      if (idx >= 0) {
+        items[idx].qty = Math.min(stock, (Number(items[idx].qty)||0) + product.qty);
+      } else {
+        items.push(product);
+      }
+      localStorage.setItem(key, JSON.stringify(items));
+
+      showCartToast('Producto agregado al carrito');
+      if (window.refreshCartBadge) window.refreshCartBadge();
+    });
+  }
+
   // Fallback para imagen
   img.addEventListener(
     "error",
@@ -226,6 +275,26 @@ function setupEventListeners() {
     },
     { once: true }
   );
+}
+
+// Ajusta cantidad y controles en base al stock disponible
+function enforceQtyByStock(stock) {
+  const maxQty = Math.max(0, Number(stock) || 0);
+  if (qty > maxQty) {
+    qty = maxQty;
+    document.getElementById("qty").textContent = qty;
+    if (sumQty) sumQty.textContent = qty;
+  }
+  // Siempre obtener referencias frescas (por si el DOM cambia)
+  plusBtn = document.querySelector('#qtyRow .publi-opt[data-q="+1"]');
+  minusBtn = document.querySelector('#qtyRow .publi-opt[data-q="-1"]');
+  // Ayuda: el elemento siguiente a qtyRow dentro del mismo panel
+  qtyHelpEl = document.querySelector('#qtyRow + .publi-help');
+  if (plusBtn) plusBtn.disabled = qty >= maxQty || maxQty === 0;
+  if (minusBtn) minusBtn.disabled = qty <= 1 || maxQty === 0;
+  const buyBtn = document.getElementById('buyBtn');
+  if (buyBtn) buyBtn.disabled = maxQty === 0;
+  if (qtyHelpEl) qtyHelpEl.textContent = (maxQty === 0) ? 'Sin stock disponible.' : `Stock disponible: ${maxQty}`;
 }
 
 // Helper para obtener color hex aproximado
@@ -348,7 +417,7 @@ async function loadProductData() {
       ramRow.appendChild(btn);
     });
 
-    // Construir botones de color (círculos con color)
+    // Construir botones de color (solo círculo sin texto)
     const colorRow = document.getElementById("colorRow");
     colorRow.innerHTML = "";
     colorOptions.forEach((color, idx) => {
@@ -359,17 +428,6 @@ async function loadProductData() {
       btn.dataset.delta = 0;
       btn.dataset.img = imgBase64 ? `data:image/png;base64,${imgBase64}` : "";
       btn.style.setProperty("--c", getColorHex(color));
-
-      // Agregar texto del color dentro del círculo
-      const span = document.createElement("span");
-      span.style.position = "absolute";
-      span.style.bottom = "-20px";
-      span.style.left = "50%";
-      span.style.transform = "translateX(-50%)";
-      span.style.fontSize = "0.7rem";
-      span.style.whiteSpace = "nowrap";
-      span.textContent = color;
-      btn.appendChild(span);
 
       colorRow.appendChild(btn);
     });
@@ -420,6 +478,9 @@ document.addEventListener("DOMContentLoaded", () => {
   sumColor = document.getElementById("sumColor");
   sumCap = document.getElementById("sumCap");
   sumQty = document.getElementById("sumQty");
+  plusBtn = document.querySelector('#qtyRow .publi-opt[data-q="+1"]');
+  minusBtn = document.querySelector('#qtyRow .publi-opt[data-q="-1"]');
+  qtyHelpEl = document.querySelector('#qtyRow + .publi-help');
 
   console.log("DOM loaded. Product ID:", productId);
   console.log("Elements initialized:", { img, priceEl, sumModel });
@@ -427,3 +488,22 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
   loadProductData();
 });
+
+// Notificación simple "agregado al carrito"
+function showCartToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'store-notification';
+  toast.innerHTML = `<i class="fa-solid fa-check"></i> ${message}`;
+  // estilos si no existen (reusa estilos de store-integration)
+  if (!document.querySelector('#notification-styles')) {
+    const styles = document.createElement('style');
+    styles.id = 'notification-styles';
+    styles.textContent = `
+      .store-notification { position: fixed; top: 100px; right: 20px; background: rgba(76,175,80,.9); backdrop-filter: blur(10px); border:1px solid rgba(76,175,80,.3); border-radius:15px; padding: .8rem 1.2rem; color:#fff; z-index: 9999; display:flex; align-items:center; gap:.5rem; animation: slideInRight .3s ease; font-size:.9rem; }
+      @keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+    `;
+    document.head.appendChild(styles);
+  }
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.animation = 'slideInRight .3s ease reverse'; setTimeout(() => toast.remove(), 300); }, 2500);
+}

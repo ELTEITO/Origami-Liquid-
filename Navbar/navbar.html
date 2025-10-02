@@ -21,17 +21,18 @@
   <nav class="nav-bar">
     <a href="../Tienda.html">Tienda</a>
     <a href="../Nosotros/nosotros.html">Contacto</a>
-    <a class="carrito">
-      <label for="carrito" class="fa-solid fa-cart-shopping"> </label>
+    <a class="carrito" id="cartButton" aria-label="Carrito" href="javascript:void(0)">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span id="cartCount" class="cart-badge" aria-live="polite">0</span>
     </a>
     <div class="nav-search">
       <input
         id="search"
-        class="nav-searchinput"
+        class="nav-search__input"
         type="search"
         placeholder="Buscar…"
       />
-      <label for="search" class="nav-searchbtn">
+      <label for="search" class="nav-search__btn">
         <i class="fa-solid fa-magnifying-glass"></i>
       </label>
     </div>

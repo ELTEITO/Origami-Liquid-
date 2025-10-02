@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Publi iPhone 17</title>
+    <title>Detalle</title>
 
     <!-- Opcional: tus estilos globales -->
     <link rel="stylesheet" href="Liquid1.css" />
@@ -29,12 +29,6 @@
         <h1 class="publi-title" id="publiModel">Cargando...</h1>
 
         <!-- COLOR -->
-        <div class="publi-panel">
-          <div class="publi-label">Color</div>
-          <div class="publi-row" id="colorRow">
-            <!-- Dinámico desde API -->
-          </div>
-        </div>
 
         <!-- RAM -->
         <div class="publi-panel">
@@ -51,7 +45,12 @@
             <!-- Dinámico desde API -->
           </div>
         </div>
-
+        <div class="publi-panel">
+          <div class="publi-label">Color</div>
+          <div class="publi-row" id="colorRow">
+            <!-- Dinámico desde API -->
+          </div>
+        </div>
         <!-- CANTIDAD -->
         <div class="publi-panel">
           <div class="publi-label">Cantidad</div>
@@ -60,7 +59,7 @@
             <span id="qty">1</span>
             <button class="publi-opt" data-q="+1">+</button>
           </div>
-          <div class="publi-help">Máximo 5 unidades.</div>
+          <div class="publi-help">Stock disponible: -</div>
         </div>
 
         <!-- PRECIO + CTA -->
@@ -77,6 +76,9 @@
           </div>
 
           <!-- Agrega tu redirección en data-redirect -->
+          <button id="addToCartBtn" class="publi-btn">
+            Agregar al carrito
+          </button>
           <button
             id="buyBtn"
             class="publi-btn primary"
@@ -110,5 +112,6 @@
 
     <!-- Script principal del producto -->
     <script src="js/publi.js"></script>
+    <script src="js/cart.js"></script>
   </body>
 </html>

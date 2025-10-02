@@ -127,13 +127,12 @@ body{ min-height:100vh; display:flex; flex-direction:column; }
   color: inherit;
   font: inherit;
   cursor: pointer;
+  padding: 0; /* evita padding por defecto que deforma los swatches */
 }
 
 /* ---------- Swatches de color ---------- */
 /* Usar variable CSS --c para colores dinámicos */
-.publi-swatch {
-  background: var(--c, #9ca3af);
-}
+.publi-swatch { width: 20px; height: 20px; aspect-ratio: 1/1; display:inline-block; flex:0 0 auto; line-height:0; border-radius: 50%; background: var(--c, #9ca3af); border:1px solid rgba(255,255,255,.35); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
 
 /* Soporte para colores hardcodeados (fallback) */
 .publi-swatch[data-color="White"],
@@ -202,8 +201,8 @@ body{ min-height:100vh; display:flex; flex-direction:column; }
 
 /* ---------- Opciones (capacidad y qty) ---------- */
 .publi-opt{
-  min-width: 150px;           /* ancho fijo y parejo */
-  height: 54px;
+  min-width: 80px;           /* ancho fijo y parejo */
+  height: 44px;
   border-radius: 14px;
   font-size: 1rem;
   font-weight: 900;
@@ -245,7 +244,8 @@ body{ min-height:100vh; display:flex; flex-direction:column; }
 
 /* Botón principal */
 .publi-btn{
-  height: 48px;
+  width: 68px;
+  height: 52px;
   padding: 0 18px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,.25);

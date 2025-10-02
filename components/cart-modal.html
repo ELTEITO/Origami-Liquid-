@@ -1,0 +1,36 @@
+<!-- Modal Carrito -->
+<div
+  id="cartModal"
+  class="cart-modal"
+  aria-hidden="true"
+  role="dialog"
+  aria-label="Carrito"
+>
+  <div class="cart-modal__overlay" data-cart-close></div>
+  <div class="cart-modal__panel glass-effect">
+    <header class="cart-modal__header">
+      <h3>Tu carrito</h3>
+      <button
+        class="cart-modal__close"
+        type="button"
+        aria-label="Cerrar"
+        data-cart-close
+      >
+        ×
+      </button>
+    </header>
+    <br><br><br><br>
+    <div id="cartList" class="cart-modal__list"></div>
+    <footer class="cart-modal__footer">
+      <div class="cart-modal__total">
+        <span>Total:</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+      <div class="cart-modal__actions">
+        <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">
+          Enviar Lista
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
