@@ -63,47 +63,81 @@ class ProductsController {
   }
 
 
-  loadCategoriesFilter() {
-    const categories = storageManager.getCategories();
-    const categoryFilter = document.getElementById('categoryFilter');
+  async loadCategoriesFilter() {
+    try {
+      const raw = await window.apiService.getProducts();
+      const products = Array.isArray(raw) ? raw : (raw?.items || []);
+      const normalized = products.map(p => ({
+        id: p.id ?? p.Id,
+        marca: p.marca || p.Marca || '',
+        modelo: p.modelo || p.Modelo || '',
+        categoria: p.categoria || p.Categoria || '',
+        imgBase64: p.img || p.Img || null
+      }));
+      const uniqueCategories = [...new Set(normalized.map(p => p.categoria))].filter(Boolean);
 
-    if (categoryFilter) {
-      categoryFilter.innerHTML = '<option value="">Todas las categorías</option>';
-      categories.forEach(category => {
-        const option = new Option(category.name, category.id);
-        categoryFilter.appendChild(option);
-      });
+      const categoryFilter = document.getElementById('categoryFilter');
+
+      if (categoryFilter) {
+        categoryFilter.innerHTML = '<option value="">Todas las categorías</option>';
+        uniqueCategories.forEach(category => {
+          const option = new Option(category, category);
+          categoryFilter.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
     }
   }
 
-  loadProducts() {
+  async loadProducts() {
     try {
-      let products = storageManager.getProducts();
+      // Mostrar loading
+      const tbody = document.getElementById('productsTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 2rem;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+            <p>Cargando productos...</p>
+          </td>
+        </tr>
+      `;
+
+      // Obtener productos del backend
+      const raw = await window.apiService.getProducts();
+      console.log('[Products] RAW:', raw);
+      let products = Array.isArray(raw) ? raw : (raw?.items || []);
+
+      // Normalizar campos
+      products = products.map(p => ({
+        id: p.id ?? p.Id,
+        marca: p.marca || p.Marca || '',
+        modelo: p.modelo || p.Modelo || '',
+        categoria: p.categoria || p.Categoria || '',
+        imagenUrl: (p.img || p.Img) ? `data:image/png;base64,${p.img || p.Img}` : ''
+      }));
+      console.log('[Products] NORMALIZED:', products.length, products);
 
       // Apply filters
       if (this.currentFilter.search) {
         const search = this.currentFilter.search.toLowerCase();
         products = products.filter(product =>
-          product.name.toLowerCase().includes(search) ||
-          product.brand.toLowerCase().includes(search) ||
-          product.model.toLowerCase().includes(search)
+          (product.modelo || '').toLowerCase().includes(search) ||
+          (product.marca || '').toLowerCase().includes(search)
         );
       }
 
       if (this.currentFilter.category) {
-        products = products.filter(product => product.categoryId === this.currentFilter.category);
+        products = products.filter(product => product.categoria === this.currentFilter.category);
       }
 
-      if (this.currentFilter.status) {
-        products = products.filter(product => product.status === this.currentFilter.status);
-      }
-
-      // Sort by creation date (newest first)
-      products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Sort by ID (newest first assuming incremental IDs)
+      products.sort((a, b) => (b.id || 0) - (a.id || 0));
 
       // Calculate pagination
       const totalProducts = products.length;
       const totalPages = Math.ceil(totalProducts / this.itemsPerPage);
+      console.log('[Products] total:', totalProducts, 'pages:', totalPages);
       const startIndex = (this.currentPage - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
       const paginatedProducts = products.slice(startIndex, endIndex);
@@ -113,13 +147,26 @@ class ProductsController {
 
     } catch (error) {
       console.error('Error loading products:', error);
+
+      const tbody = document.getElementById('productsTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty-state">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <p>Error al cargar los productos</p>
+            <button class="btn btn-primary" onclick="productsController.loadProducts()">
+              <i class="fa-solid fa-refresh"></i> Reintentar
+            </button>
+          </td>
+        </tr>
+      `;
+
       this.showError('Error al cargar los productos');
     }
   }
 
   renderProducts(products) {
     const tbody = document.getElementById('productsTableBody');
-    const categories = storageManager.getCategories();
 
     if (products.length === 0) {
       tbody.innerHTML = `
@@ -134,15 +181,15 @@ class ProductsController {
     }
 
     tbody.innerHTML = products.map(product => {
-      const category = categories.find(c => c.id === product.categoryId);
-      const categoryName = category ? category.name : 'Sin categoría';
+      const categoryName = product.categoria || 'Sin categoría';
+      const fechaCreacion = product.fechaCreacion || new Date().toISOString();
 
       return `
         <tr>
           <td>
             <div class="product-image">
-              ${product.image ?
-                `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              ${product.imagenUrl ?
+                `<img src="${product.imagenUrl}" alt="${product.modelo}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                  <div class="image-placeholder" style="display: none;">
                    <i class="fa-solid fa-image"></i>
                  </div>` :
@@ -154,25 +201,23 @@ class ProductsController {
           </td>
           <td>
             <div class="product-info">
-              <div class="product-name">${product.name}</div>
-              <div class="product-details">${product.brand} ${product.model}</div>
+              <div class="product-name">${product.modelo}</div>
+              <div class="product-details">${product.marca}</div>
             </div>
           </td>
           <td>
             <span class="category-badge">${categoryName}</span>
           </td>
+         
           <td>
-            <span class="price">$${product.basePrice.toLocaleString()}</span>
-          </td>
-          <td>
-            <span class="status-badge status-${product.status}">
-              ${this.getStatusLabel(product.status)}
+            <span class="status-badge status-active">
+              Activo
             </span>
           </td>
           <td>
             <div class="date-info">
-              <div>${new Date(product.createdAt).toLocaleDateString()}</div>
-              <div class="date-time">${new Date(product.createdAt).toLocaleTimeString()}</div>
+              <div>${new Date(fechaCreacion).toLocaleDateString()}</div>
+              <div class="date-time">${new Date(fechaCreacion).toLocaleTimeString()}</div>
             </div>
           </td>
           <td>
@@ -266,23 +311,33 @@ class ProductsController {
     this.productToDelete = null;
   }
 
-  confirmDelete() {
+  async confirmDelete() {
     if (!this.productToDelete) return;
 
-    try {
-      const success = storageManager.deleteProduct(this.productToDelete);
+    // Loading state
+    const confirmBtn = document.querySelector('#deleteModal .btn-danger');
+    const originalText = confirmBtn.innerHTML;
+    confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+    confirmBtn.disabled = true;
 
-      if (success) {
-        this.showSuccess('Producto eliminado correctamente');
-        this.closeDeleteModal();
-        this.loadProducts();
-      } else {
-        this.showError('Error al eliminar el producto');
-      }
+    try {
+      await window.apiService.deleteProduct(this.productToDelete);
+      this.showSuccess('Producto eliminado correctamente');
+      this.closeDeleteModal();
+      this.loadProducts();
 
     } catch (error) {
       console.error('Error deleting product:', error);
-      this.showError('Error al eliminar el producto');
+
+      let errorMessage = 'Error al eliminar el producto';
+      if (error instanceof window.ApiError) {
+        errorMessage = error.message;
+      }
+
+      this.showError(errorMessage);
+    } finally {
+      confirmBtn.innerHTML = originalText;
+      confirmBtn.disabled = false;
     }
   }
 

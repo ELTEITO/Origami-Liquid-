@@ -13,6 +13,7 @@ namespace OrigamiBack.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Productos> Productos { get; set; }
         public DbSet<Categorias> Categorias { get; set; }
+        public DbSet<Marcas> Marcas { get; set; }
         public DbSet<ProductosVariantes> ProductosVariantes { get; set; }
 
         /// VISTAS
@@ -31,6 +32,10 @@ namespace OrigamiBack.Data
 
           modelBuilder.Entity<Categorias>()
                 .ToTable("categorias")
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Marcas>()
+                .ToTable("marcas")
                 .HasKey(p => p.Id);
 
             modelBuilder.Entity<Productos>()

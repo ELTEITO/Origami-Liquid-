@@ -6,161 +6,231 @@ class AuthManager {
   }
 
   init() {
-    // Admin credentials (en producción esto vendría de una API)
-    this.adminCredentials = {
-      username: 'admin',
-      password: 'origami2025'
-    };
-
-    this.setupLoginForm();
-    this.checkAuthStatus();
+    // Esperar a que el DOM esté completamente cargado
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        this.setupLoginForm();
+        this.checkAuthStatus();
+      });
+    } else {
+      this.setupLoginForm();
+      this.checkAuthStatus();
+    }
   }
 
   setupLoginForm() {
-    const loginForm = document.getElementById('loginForm');
+    const loginForm = document.getElementById("loginForm");
     if (loginForm) {
-      loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+      loginForm.addEventListener("submit", (e) => this.handleLogin(e));
     }
   }
 
   async handleLogin(event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
-    const username = formData.get('username').trim();
-    const password = formData.get('password');
+    console.log("[Auth] DOM readyState:", document.readyState);
+    console.log("[Auth] Buscando inputs...");
+
+    // Usar el formulario que disparó el submit para mayor robustez
+    const form = event.currentTarget || document.getElementById("loginForm");
+
+    // Obtener referencias a los inputs (por id, name o tipo)
+    const emailInput =
+      form?.querySelector('input[name="email"], #email, input[type="email"]') ||
+      document.querySelector("#email") ||
+      document.querySelector('input[name="email"]');
+    const passwordInput =
+      form?.querySelector(
+        'input[name="password"], #password, input[type="password"]'
+      ) ||
+      document.querySelector("#password") ||
+      document.querySelector('input[name="password"]');
+
+    console.log("[Auth] Inputs encontrados:", {
+      emailInput: !!emailInput,
+      passwordInput: !!passwordInput,
+    });
+
+    console.log("[Auth] Email input element:", emailInput);
+    console.log("[Auth] Password input element:", passwordInput);
+
+    if (!emailInput || !passwordInput) {
+      this.showError("Error: No se encontraron los campos del formulario");
+      return;
+    }
+
+    // Obtener valores
+    const email = emailInput.value?.trim() || "";
+    const password = passwordInput.value || "";
+
+    console.log("[Auth] Valores:", {
+      emailLength: email.length,
+      passwordLength: password.length,
+      emailValue: email,
+    });
+
+    // Validación básica
+    if (!email || !password) {
+      this.showError("Por favor ingresa email y contraseña");
+      return;
+    }
 
     // Loading state
-    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const submitBtn =
+      (form && form.querySelector('button[type="submit"]')) ||
+      document.querySelector('#loginForm button[type="submit"]');
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando sesión...';
+    submitBtn.innerHTML =
+      '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando sesión...';
     submitBtn.disabled = true;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      if (this.validateCredentials(username, password)) {
-        // Create session
-        const sessionData = {
-          username: username,
-          loginTime: new Date().toISOString(),
-          token: this.generateToken(),
-          expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString() // 8 hours
-        };
+      // Llamar al backend
+      const response = await window.apiService.login(email, password);
 
-        localStorage.setItem('adminSession', JSON.stringify(sessionData));
+      // Guardar sesión localmente
+      const sessionData = {
+        email: response.usuario.email,
+        rol: response.usuario.rol,
+        loginTime: new Date().toISOString(),
+      };
 
-        // Success feedback
-        this.showMessage('¡Inicio de sesión exitoso!', 'success');
+      localStorage.setItem("adminSession", JSON.stringify(sessionData));
 
-        // Redirect to dashboard - handle both paths
-        setTimeout(() => {
-          if (window.location.pathname.includes('/auth/')) {
-            window.location.href = '../admin/dashboard.html';
-          } else {
-            window.location.href = '/admin/dashboard.html';
-          }
-        }, 1000);
+      // Success feedback
+      this.showMessage("¡Inicio de sesión exitoso!", "success");
 
-      } else {
-        throw new Error('Credenciales incorrectas');
-      }
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = "/admin/dashboard.html";
+      }, 1000);
     } catch (error) {
-      this.showError(error.message);
+      let errorMessage = "Error al iniciar sesión";
+
+      if (error instanceof window.ApiError) {
+        if (error.isAuthError()) {
+          errorMessage = "Credenciales incorrectas";
+        } else if (error.isServerError()) {
+          errorMessage = "Error del servidor. Intenta nuevamente.";
+        } else {
+          errorMessage = error.message;
+        }
+      } else {
+        errorMessage = "No se pudo conectar con el servidor";
+      }
+
+      this.showError(errorMessage);
     } finally {
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
     }
   }
 
-  validateCredentials(username, password) {
-    return username === this.adminCredentials.username &&
-           password === this.adminCredentials.password;
-  }
-
-  generateToken() {
-    return 'admin_' + Math.random().toString(36).substr(2, 15) + Date.now().toString(36);
-  }
-
-  checkAuthStatus() {
-    const session = this.getSession();
-
-    // If we're on login page and already authenticated, redirect to dashboard
-    if (session && window.location.pathname.includes('login.html')) {
-      if (window.location.pathname.includes('/auth/')) {
-        window.location.href = '../admin/dashboard.html';
-      } else {
-        window.location.href = '/admin/dashboard.html';
+  async checkAuthStatus() {
+    // If we're on login page, check if already authenticated
+    if (window.location.pathname.includes("login.html")) {
+      try {
+        const response = await window.apiService.verifySession();
+        if (response.isAuthenticated) {
+          // Already authenticated, redirect to dashboard
+          window.location.href = "/admin/dashboard.html";
+        }
+      } catch (error) {
+        // Not authenticated, stay on login page
       }
       return;
     }
 
-    // If we're on admin pages and not authenticated, redirect to login
-    if (!session && window.location.pathname.includes('/admin/') &&
-        !window.location.pathname.includes('login.html')) {
-      window.location.href = '../auth/login.html';
-      return;
-    }
+    // If we're on admin pages, verify authentication
+    if (
+      window.location.pathname.includes("/admin/") &&
+      !window.location.pathname.includes("login.html")
+    ) {
+      try {
+        console.log("[Auth] Verificando sesión...");
+        const response = await window.apiService.verifySession();
+        console.log("[Auth] Respuesta de verify:", response);
 
-    return session;
+        if (!response.isAuthenticated) {
+          console.error("[Auth] No autenticado según response");
+          throw new Error("Not authenticated");
+        }
+
+        // Update local session
+        const sessionData = {
+          email: response.usuario.email,
+          rol: response.usuario.rol,
+          loginTime: new Date().toISOString(),
+        };
+        localStorage.setItem("adminSession", JSON.stringify(sessionData));
+
+        console.log("[Auth] Sesión válida:", sessionData);
+        return sessionData;
+      } catch (error) {
+        // Not authenticated, redirect to login
+        console.error("[Auth] Error verificando sesión:", error);
+        this.logout();
+      }
+    }
   }
 
   getSession() {
     try {
-      const sessionData = localStorage.getItem('adminSession');
+      const sessionData = localStorage.getItem("adminSession");
       if (!sessionData) return null;
 
-      const session = JSON.parse(sessionData);
-
-      // Check if session is expired
-      if (new Date() > new Date(session.expiresAt)) {
-        this.logout();
-        return null;
-      }
-
-      return session;
+      return JSON.parse(sessionData);
     } catch (error) {
-      console.error('Error reading session:', error);
+      console.error("Error reading session:", error);
       this.logout();
       return null;
     }
   }
 
-  logout() {
-    localStorage.removeItem('adminSession');
-    if (window.location.pathname.includes('/admin/') &&
-        !window.location.pathname.includes('login.html')) {
-      window.location.href = '/admin/login.html';
+  async logout() {
+    try {
+      await window.apiService.logout();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      localStorage.removeItem("adminSession");
+      if (
+        window.location.pathname.includes("/admin/") &&
+        !window.location.pathname.includes("login.html")
+      ) {
+        window.location.href = "/admin/auth/login.html";
+      }
     }
   }
 
   showError(message) {
-    const errorDiv = document.getElementById('errorMessage');
+    const errorDiv = document.getElementById("errorMessage");
     if (errorDiv) {
       errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
+      errorDiv.style.display = "block";
 
       // Auto hide after 5 seconds
       setTimeout(() => {
-        errorDiv.style.display = 'none';
+        errorDiv.style.display = "none";
       }, 5000);
     }
   }
 
-  showMessage(message, type = 'info') {
+  showMessage(message, type = "info") {
     // Create toast notification
-    const toast = document.createElement('div');
+    const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
-      <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+      <i class="fa-solid fa-${
+        type === "success" ? "check-circle" : "info-circle"
+      }"></i>
       ${message}
     `;
 
     // Add toast styles if not exist
-    if (!document.querySelector('#toast-styles')) {
-      const styles = document.createElement('style');
-      styles.id = 'toast-styles';
+    if (!document.querySelector("#toast-styles")) {
+      const styles = document.createElement("style");
+      styles.id = "toast-styles";
       styles.textContent = `
         .toast {
           position: fixed;
@@ -179,7 +249,7 @@ class AuthManager {
           animation: slideIn 0.3s ease;
         }
         .toast-success { border-left: 4px solid #4caf50; }
-        .toast-error { border-left: 4px solid #f44336; }
+        .toast-error { border-left: 4px solid #0b64a1; }
         @keyframes slideIn {
           from { transform: translateX(100%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }
@@ -192,7 +262,7 @@ class AuthManager {
 
     // Auto remove
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
+      toast.style.animation = "slideIn 0.3s ease reverse";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
@@ -200,42 +270,27 @@ class AuthManager {
   // Method to get current user info
   getCurrentUser() {
     const session = this.getSession();
-    return session ? {
-      username: session.username,
-      loginTime: session.loginTime
-    } : null;
-  }
-
-  // Method to extend session
-  extendSession() {
-    const session = this.getSession();
-    if (session) {
-      session.expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
-      localStorage.setItem('adminSession', JSON.stringify(session));
-    }
+    return session
+      ? {
+          email: session.email,
+          rol: session.rol,
+          loginTime: session.loginTime,
+        }
+      : null;
   }
 }
 
-// Initialize auth manager
-const authManager = new AuthManager();
+// Initialize auth manager when DOM is ready
+let authManager;
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    authManager = new AuthManager();
+  });
+} else {
+  authManager = new AuthManager();
+}
 
 // Global auth functions
-window.logout = () => authManager.logout();
-window.getCurrentUser = () => authManager.getCurrentUser();
-window.extendSession = () => authManager.extendSession();
-
-// Activity tracking to extend session
-let activityTimer;
-function resetActivityTimer() {
-  clearTimeout(activityTimer);
-  activityTimer = setTimeout(() => {
-    authManager.extendSession();
-  }, 60000); // Extend session every minute of activity
-}
-
-// Listen for user activity
-if (typeof window !== 'undefined') {
-  ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
-    document.addEventListener(event, resetActivityTimer, true);
-  });
-}
+window.logout = () => authManager?.logout();
+window.getCurrentUser = () => authManager?.getCurrentUser();

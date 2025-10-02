@@ -18,5 +18,25 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Img, opt => opt.MapFrom(src =>
                 src.Img != null ? Convert.ToBase64String(src.Img) : null));
 
+        // Marcas <-> MarcaDto
+        CreateMap<Marcas, MarcaDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre ?? string.Empty));
+        CreateMap<MarcaDto, Marcas>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre));
+
+        // Categorias <-> CategoriaDto
+        CreateMap<Categorias, CategoriaDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre ?? string.Empty))
+            .ForMember(dest => dest.Descripcion, opt => opt.MapFrom(src => src.Descripcion ?? string.Empty))
+            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon ?? string.Empty));
+        CreateMap<CategoriaDto, Categorias>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre))
+            .ForMember(dest => dest.Descripcion, opt => opt.MapFrom(src => src.Descripcion))
+            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
+
     }
 }

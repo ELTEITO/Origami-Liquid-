@@ -136,7 +136,7 @@ body {
 .error-message {
   background: rgba(244, 67, 54, 0.1);
   border: 1px solid rgba(244, 67, 54, 0.3);
-  color: #f44336;
+  color: #0b64a1;
   padding: 1rem;
   border-radius: var(--nav-item-radius);
   margin-top: 1rem;
@@ -299,12 +299,12 @@ body {
 }
 
 .btn-danger {
-  background: #f44336;
+  background: #0b64a1;
   color: white;
 }
 
 .btn-danger:hover {
-  background: #d32f2f;
+  background: #2f7ed3;
 }
 
 /* Cards */

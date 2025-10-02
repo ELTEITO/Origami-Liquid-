@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Backend"
   ],
-  "SelectedNode": "\\.gitignore",
+  "SelectedNode": "\\Backend\\OrigamiBack.sln",
   "PreviewInSolutionExplorer": false
 }

@@ -5,9 +5,9 @@ class OrdersController {
     this.currentPage = 1;
     this.itemsPerPage = 10;
     this.currentFilter = {
-      status: '',
-      search: '',
-      date: ''
+      status: "",
+      search: "",
+      date: "",
     };
     this.currentOrderId = null;
 
@@ -22,26 +22,26 @@ class OrdersController {
 
   setupEventListeners() {
     // Filters
-    document.getElementById('statusFilter').addEventListener('change', (e) => {
+    document.getElementById("statusFilter").addEventListener("change", (e) => {
       this.currentFilter.status = e.target.value;
       this.currentPage = 1;
       this.loadOrders();
     });
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
+    document.getElementById("searchInput").addEventListener("input", (e) => {
       this.currentFilter.search = e.target.value;
       this.currentPage = 1;
       this.loadOrders();
     });
 
-    document.getElementById('dateFilter').addEventListener('change', (e) => {
+    document.getElementById("dateFilter").addEventListener("change", (e) => {
       this.currentFilter.date = e.target.value;
       this.currentPage = 1;
       this.loadOrders();
     });
 
     // Status form
-    document.getElementById('statusForm').addEventListener('submit', (e) => {
+    document.getElementById("statusForm").addEventListener("submit", (e) => {
       e.preventDefault();
       this.updateOrderStatus();
     });
@@ -61,22 +61,25 @@ class OrdersController {
 
       // Apply filters
       if (this.currentFilter.status) {
-        orders = orders.filter(order => order.status === this.currentFilter.status);
+        orders = orders.filter(
+          (order) => order.status === this.currentFilter.status
+        );
       }
 
       if (this.currentFilter.search) {
         const search = this.currentFilter.search.toLowerCase();
-        orders = orders.filter(order =>
-          order.id.toLowerCase().includes(search) ||
-          order.customerName.toLowerCase().includes(search) ||
-          order.customerEmail.toLowerCase().includes(search)
+        orders = orders.filter(
+          (order) =>
+            order.id.toLowerCase().includes(search) ||
+            order.customerName.toLowerCase().includes(search) ||
+            order.customerEmail.toLowerCase().includes(search)
         );
       }
 
       if (this.currentFilter.date) {
         const filterDate = new Date(this.currentFilter.date).toDateString();
-        orders = orders.filter(order =>
-          new Date(order.createdAt).toDateString() === filterDate
+        orders = orders.filter(
+          (order) => new Date(order.createdAt).toDateString() === filterDate
         );
       }
 
@@ -93,15 +96,14 @@ class OrdersController {
       this.renderOrders(paginatedOrders);
       this.renderPagination(totalPages, totalOrders);
       this.updateOrderStats();
-
     } catch (error) {
-      console.error('Error loading orders:', error);
-      this.showError('Error al cargar los pedidos');
+      console.error("Error loading orders:", error);
+      this.showError("Error al cargar los pedidos");
     }
   }
 
   renderOrders(orders) {
-    const tbody = document.getElementById('ordersTableBody');
+    const tbody = document.getElementById("ordersTableBody");
 
     if (orders.length === 0) {
       tbody.innerHTML = `
@@ -115,11 +117,12 @@ class OrdersController {
       return;
     }
 
-    tbody.innerHTML = orders.map(order => {
-      const itemCount = order.items ? order.items.length : 0;
-      const firstItem = order.items && order.items[0];
+    tbody.innerHTML = orders
+      .map((order) => {
+        const itemCount = order.items ? order.items.length : 0;
+        const firstItem = order.items && order.items[0];
 
-      return `
+        return `
         <tr>
           <td>
             <code class="order-id">#${order.id.slice(-8).toUpperCase()}</code>
@@ -132,10 +135,18 @@ class OrdersController {
           </td>
           <td>
             <div class="order-items">
-              ${firstItem ? `
+              ${
+                firstItem
+                  ? `
                 <div class="first-item">${firstItem.name}</div>
-                ${itemCount > 1 ? `<div class="item-count">+${itemCount - 1} más</div>` : ''}
-              ` : 'Sin productos'}
+                ${
+                  itemCount > 1
+                    ? `<div class="item-count">+${itemCount - 1} más</div>`
+                    : ""
+                }
+              `
+                  : "Sin productos"
+              }
             </div>
           </td>
           <td>
@@ -149,43 +160,54 @@ class OrdersController {
           <td>
             <div class="date-info">
               <div>${new Date(order.createdAt).toLocaleDateString()}</div>
-              <div class="date-time">${new Date(order.createdAt).toLocaleTimeString()}</div>
+              <div class="date-time">${new Date(
+                order.createdAt
+              ).toLocaleTimeString()}</div>
             </div>
           </td>
           <td>
             <div class="table-actions">
-              <button class="btn btn-small btn-secondary" onclick="viewOrder('${order.id}')" title="Ver detalles">
+              <button class="btn btn-small btn-secondary" onclick="viewOrder('${
+                order.id
+              }')" title="Ver detalles">
                 <i class="fa-solid fa-eye"></i>
               </button>
-              <button class="btn btn-small btn-primary" onclick="updateStatus('${order.id}')" title="Cambiar estado">
+              <button class="btn btn-small btn-primary" onclick="updateStatus('${
+                order.id
+              }')" title="Cambiar estado">
                 <i class="fa-solid fa-edit"></i>
               </button>
             </div>
           </td>
         </tr>
       `;
-    }).join('');
+      })
+      .join("");
 
     this.addOrderTableStyles();
   }
 
   renderPagination(totalPages, totalOrders) {
-    const pagination = document.getElementById('pagination');
-    const orderCount = document.getElementById('orderCount');
+    const pagination = document.getElementById("pagination");
+    const orderCount = document.getElementById("orderCount");
 
-    orderCount.textContent = `${totalOrders} pedido${totalOrders !== 1 ? 's' : ''}`;
+    orderCount.textContent = `${totalOrders} pedido${
+      totalOrders !== 1 ? "s" : ""
+    }`;
 
     if (totalPages <= 1) {
-      pagination.innerHTML = '';
+      pagination.innerHTML = "";
       return;
     }
 
-    let paginationHTML = '';
+    let paginationHTML = "";
 
     // Previous button
     if (this.currentPage > 1) {
       paginationHTML += `
-        <button class="btn btn-secondary btn-small" onclick="ordersController.goToPage(${this.currentPage - 1})">
+        <button class="btn btn-secondary btn-small" onclick="ordersController.goToPage(${
+          this.currentPage - 1
+        })">
           <i class="fa-solid fa-chevron-left"></i>
         </button>
       `;
@@ -197,7 +219,11 @@ class OrdersController {
         paginationHTML += `
           <button class="btn btn-primary btn-small">${i}</button>
         `;
-      } else if (i <= 2 || i >= totalPages - 1 || Math.abs(i - this.currentPage) <= 1) {
+      } else if (
+        i <= 2 ||
+        i >= totalPages - 1 ||
+        Math.abs(i - this.currentPage) <= 1
+      ) {
         paginationHTML += `
           <button class="btn btn-secondary btn-small" onclick="ordersController.goToPage(${i})">${i}</button>
         `;
@@ -211,7 +237,9 @@ class OrdersController {
     // Next button
     if (this.currentPage < totalPages) {
       paginationHTML += `
-        <button class="btn btn-secondary btn-small" onclick="ordersController.goToPage(${this.currentPage + 1})">
+        <button class="btn btn-secondary btn-small" onclick="ordersController.goToPage(${
+          this.currentPage + 1
+        })">
           <i class="fa-solid fa-chevron-right"></i>
         </button>
       `;
@@ -229,30 +257,34 @@ class OrdersController {
     const orders = storageManager.getOrders();
 
     const totalOrders = orders.length;
-    const pendingOrders = orders.filter(o => o.status === 'pending').length;
-    const completedOrders = orders.filter(o => o.status === 'delivered').length;
+    const pendingOrders = orders.filter((o) => o.status === "pending").length;
+    const completedOrders = orders.filter(
+      (o) => o.status === "delivered"
+    ).length;
     const totalRevenue = orders
-      .filter(o => o.status === 'delivered')
+      .filter((o) => o.status === "delivered")
       .reduce((sum, order) => sum + order.total, 0);
 
-    document.getElementById('totalOrders').textContent = totalOrders;
-    document.getElementById('pendingOrders').textContent = pendingOrders;
-    document.getElementById('completedOrders').textContent = completedOrders;
-    document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString()}`;
+    document.getElementById("totalOrders").textContent = totalOrders;
+    document.getElementById("pendingOrders").textContent = pendingOrders;
+    document.getElementById("completedOrders").textContent = completedOrders;
+    document.getElementById(
+      "totalRevenue"
+    ).textContent = `$${totalRevenue.toLocaleString()}`;
   }
 
   viewOrder(orderId) {
-    const order = storageManager.getOrders().find(o => o.id === orderId);
+    const order = storageManager.getOrders().find((o) => o.id === orderId);
     if (!order) {
-      this.showError('Pedido no encontrado');
+      this.showError("Pedido no encontrado");
       return;
     }
 
-    const modal = document.getElementById('orderModal');
-    const detailsContainer = document.getElementById('orderDetails');
+    const modal = document.getElementById("orderModal");
+    const detailsContainer = document.getElementById("orderDetails");
 
     detailsContainer.innerHTML = this.renderOrderDetails(order);
-    modal.classList.add('active');
+    modal.classList.add("active");
   }
 
   renderOrderDetails(order) {
@@ -264,7 +296,9 @@ class OrdersController {
             <span class="status-badge status-${order.status}">
               ${this.getStatusLabel(order.status)}
             </span>
-            <span class="order-date">${new Date(order.createdAt).toLocaleString()}</span>
+            <span class="order-date">${new Date(
+              order.createdAt
+            ).toLocaleString()}</span>
           </div>
         </div>
         <div class="order-total-large">
@@ -285,62 +319,98 @@ class OrdersController {
               <span class="label">Email:</span>
               <span class="value">${order.customerEmail}</span>
             </div>
-            ${order.customerPhone ? `
+            ${
+              order.customerPhone
+                ? `
               <div class="detail-row">
                 <span class="label">Teléfono:</span>
                 <span class="value">${order.customerPhone}</span>
               </div>
-            ` : ''}
-            ${order.shippingAddress ? `
+            `
+                : ""
+            }
+            ${
+              order.shippingAddress
+                ? `
               <div class="detail-row">
                 <span class="label">Dirección:</span>
                 <span class="value">${order.shippingAddress}</span>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
 
         <div class="order-section">
           <h4>Productos Pedidos</h4>
           <div class="order-items-detail">
-            ${order.items.map(item => `
+            ${order.items
+              .map(
+                (item) => `
               <div class="item-detail">
                 <div class="item-info">
                   <div class="item-name">${item.name}</div>
                   <div class="item-specs">
-                    ${item.color ? `Color: ${item.color}` : ''}
-                    ${item.storage ? ` • Almacenamiento: ${item.storage}` : ''}
+                    ${item.color ? `Color: ${item.color}` : ""}
+                    ${item.storage ? ` • Almacenamiento: ${item.storage}` : ""}
                   </div>
                 </div>
                 <div class="item-quantity">x${item.quantity}</div>
                 <div class="item-price">$${item.price.toLocaleString()}</div>
-                <div class="item-subtotal">$${(item.price * item.quantity).toLocaleString()}</div>
+                <div class="item-subtotal">$${(
+                  item.price * item.quantity
+                ).toLocaleString()}</div>
               </div>
-            `).join('')}
+            `
+              )
+              .join("")}
           </div>
         </div>
 
-        ${order.notes ? `
+        ${
+          order.notes
+            ? `
           <div class="order-section">
             <h4>Notas</h4>
             <div class="order-notes">${order.notes}</div>
           </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <div class="order-section">
           <h4>Historial de Estados</h4>
           <div class="status-history">
             <div class="status-entry">
-              <div class="status-date">${new Date(order.createdAt).toLocaleString()}</div>
+              <div class="status-date">${new Date(
+                order.createdAt
+              ).toLocaleString()}</div>
               <div class="status-action">Pedido creado</div>
             </div>
-            ${order.statusHistory ? order.statusHistory.map(entry => `
+            ${
+              order.statusHistory
+                ? order.statusHistory
+                    .map(
+                      (entry) => `
               <div class="status-entry">
-                <div class="status-date">${new Date(entry.date).toLocaleString()}</div>
-                <div class="status-action">Estado cambiado a: ${this.getStatusLabel(entry.status)}</div>
-                ${entry.notes ? `<div class="status-notes">${entry.notes}</div>` : ''}
+                <div class="status-date">${new Date(
+                  entry.date
+                ).toLocaleString()}</div>
+                <div class="status-action">Estado cambiado a: ${this.getStatusLabel(
+                  entry.status
+                )}</div>
+                ${
+                  entry.notes
+                    ? `<div class="status-notes">${entry.notes}</div>`
+                    : ""
+                }
               </div>
-            `).join('') : ''}
+            `
+                    )
+                    .join("")
+                : ""
+            }
           </div>
         </div>
       </div>
@@ -355,49 +425,49 @@ class OrdersController {
   }
 
   closeOrderModal() {
-    const modal = document.getElementById('orderModal');
-    modal.classList.remove('active');
+    const modal = document.getElementById("orderModal");
+    modal.classList.remove("active");
   }
 
   openStatusModal(orderId) {
-    const order = storageManager.getOrders().find(o => o.id === orderId);
+    const order = storageManager.getOrders().find((o) => o.id === orderId);
     if (!order) {
-      this.showError('Pedido no encontrado');
+      this.showError("Pedido no encontrado");
       return;
     }
 
     this.currentOrderId = orderId;
-    document.getElementById('statusOrderId').value = orderId;
-    document.getElementById('newStatus').value = order.status;
-    document.getElementById('statusNotes').value = '';
+    document.getElementById("statusOrderId").value = orderId;
+    document.getElementById("newStatus").value = order.status;
+    document.getElementById("statusNotes").value = "";
 
-    const modal = document.getElementById('statusModal');
-    modal.classList.add('active');
+    const modal = document.getElementById("statusModal");
+    modal.classList.add("active");
   }
 
   closeStatusModal() {
-    const modal = document.getElementById('statusModal');
-    modal.classList.remove('active');
+    const modal = document.getElementById("statusModal");
+    modal.classList.remove("active");
     this.currentOrderId = null;
   }
 
   updateOrderStatus() {
     try {
-      const orderId = document.getElementById('statusOrderId').value;
-      const newStatus = document.getElementById('newStatus').value;
-      const notes = document.getElementById('statusNotes').value;
+      const orderId = document.getElementById("statusOrderId").value;
+      const newStatus = document.getElementById("newStatus").value;
+      const notes = document.getElementById("statusNotes").value;
 
       if (!orderId || !newStatus) {
-        this.showError('Datos incompletos');
+        this.showError("Datos incompletos");
         return;
       }
 
       // Get the order
       const orders = storageManager.getOrders();
-      const orderIndex = orders.findIndex(o => o.id === orderId);
+      const orderIndex = orders.findIndex((o) => o.id === orderId);
 
       if (orderIndex === -1) {
-        this.showError('Pedido no encontrado');
+        this.showError("Pedido no encontrado");
         return;
       }
 
@@ -416,24 +486,23 @@ class OrdersController {
         date: new Date().toISOString(),
         status: newStatus,
         previousStatus: oldStatus,
-        notes: notes || undefined
+        notes: notes || undefined,
       });
 
       // Save the updated orders
       const success = storageManager.saveOrders(orders);
 
       if (success) {
-        this.showSuccess('Estado del pedido actualizado correctamente');
+        this.showSuccess("Estado del pedido actualizado correctamente");
         this.closeStatusModal();
         this.closeOrderModal(); // Close order details modal if open
         this.loadOrders();
       } else {
-        this.showError('Error al actualizar el estado del pedido');
+        this.showError("Error al actualizar el estado del pedido");
       }
-
     } catch (error) {
-      console.error('Error updating order status:', error);
-      this.showError('Error al actualizar el estado del pedido');
+      console.error("Error updating order status:", error);
+      this.showError("Error al actualizar el estado del pedido");
     }
   }
 
@@ -441,65 +510,69 @@ class OrdersController {
     try {
       const products = storageManager.getProducts();
       if (products.length === 0) {
-        this.showError('No hay productos disponibles para crear un pedido de prueba');
+        this.showError(
+          "No hay productos disponibles para crear un pedido de prueba"
+        );
         return;
       }
 
       // Create a sample order with random products
       const sampleProducts = products.slice(0, Math.min(3, products.length));
-      const items = sampleProducts.map(product => ({
+      const items = sampleProducts.map((product) => ({
         id: product.id,
         name: product.name,
         price: product.basePrice,
         quantity: Math.floor(Math.random() * 3) + 1,
-        color: 'Blanco',
-        storage: '256GB'
+        color: "Blanco",
+        storage: "256GB",
       }));
 
-      const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const total = items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
 
       const sampleOrder = {
-        customerName: 'Cliente de Prueba',
-        customerEmail: 'cliente@ejemplo.com',
-        customerPhone: '+1234567890',
-        shippingAddress: 'Calle Falsa 123, Ciudad, País',
+        customerName: "Cliente de Prueba",
+        customerEmail: "cliente@ejemplo.com",
+        customerPhone: "+1234567890",
+        shippingAddress: "Calle Falsa 123, Ciudad, País",
         items: items,
         total: total,
-        status: 'pending',
-        notes: 'Este es un pedido de prueba generado automáticamente'
+        status: "pending",
+        notes: "Este es un pedido de prueba generado automáticamente",
       };
 
       const newOrder = storageManager.addOrder(sampleOrder);
 
       if (newOrder) {
-        this.showSuccess('Pedido de prueba creado correctamente');
+        this.showSuccess("Pedido de prueba creado correctamente");
         this.loadOrders();
       } else {
-        this.showError('Error al crear el pedido de prueba');
+        this.showError("Error al crear el pedido de prueba");
       }
-
     } catch (error) {
-      console.error('Error creating sample order:', error);
-      this.showError('Error al crear el pedido de prueba');
+      console.error("Error creating sample order:", error);
+      this.showError("Error al crear el pedido de prueba");
     }
   }
 
   getStatusLabel(status) {
     const labels = {
-      pending: 'Pendiente',
-      processing: 'Procesando',
-      shipped: 'Enviado',
-      delivered: 'Entregado',
-      cancelled: 'Cancelado'
+      pending: "Pendiente",
+      processing: "Procesando",
+      shipped: "Enviado",
+      delivered: "Entregado",
+      cancelled: "Cancelado",
     };
     return labels[status] || status;
   }
 
   addOrderTableStyles() {
-    if (document.querySelector('#order-table-styles')) return;
+    if (document.querySelector("#order-table-styles")) return;
 
-    const styles = document.createElement('style');
-    styles.id = 'order-table-styles';
+    const styles = document.createElement("style");
+    styles.id = "order-table-styles";
     styles.textContent = `
       .order-stats {
         grid-template-columns: repeat(4, 1fr);
@@ -586,7 +659,7 @@ class OrdersController {
 
       .status-cancelled {
         background: rgba(244, 67, 54, 0.2);
-        color: #f44336;
+        color: #0b64a1;
         border: 1px solid rgba(244, 67, 54, 0.3);
       }
 
@@ -799,31 +872,33 @@ class OrdersController {
   }
 
   showSuccess(message) {
-    this.showToast(message, 'success');
+    this.showToast(message, "success");
   }
 
   showError(message) {
-    this.showToast(message, 'error');
+    this.showToast(message, "error");
   }
 
   showToast(message, type) {
-    const toast = document.createElement('div');
+    const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
-      <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+      <i class="fa-solid fa-${
+        type === "success" ? "check-circle" : "exclamation-circle"
+      }"></i>
       ${message}
     `;
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
+      toast.style.animation = "slideIn 0.3s ease reverse";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
 }
 
 // Initialize orders controller when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   window.ordersController = new OrdersController();
 });

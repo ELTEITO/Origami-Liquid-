@@ -270,7 +270,7 @@ try
     builder.Services.Configure<CookiePolicyOptions>(options =>
     {
         options.CheckConsentNeeded = context => true;
-        options.MinimumSameSitePolicy = SameSiteMode.Strict;
+        options.MinimumSameSitePolicy = SameSiteMode.Lax; // Lax para permitir cookies en mismo sitio
         options.HttpOnly = HttpOnlyPolicy.Always;
         options.Secure = builder.Environment.IsDevelopment()
             ? CookieSecurePolicy.SameAsRequest
@@ -354,9 +354,11 @@ try
 
     // 10. Inyección de dependencias personalizadas
     builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-    // builder.Services.AddScoped<ICelularesService, EquiposService>();
-    // builder.Services.AddScoped<IvCelularesInfoService, vCelularesInfoService>();
+    //builder.Services.AddScoped<ICelularesService, EquiposService>();
+    //builder.Services.AddScoped<IvCelularesInfoService, vCelularesInfoService>();
     builder.Services.AddScoped<IProductoService, ProductosService>();
+    builder.Services.AddScoped<IMarcaService, MarcasService>();
+    builder.Services.AddScoped<ICategoriaService, CategoriasService>();
 
     var app = builder.Build();
 
@@ -489,19 +491,39 @@ try
 
     // 13. Configuración de middleware pipeline
     app.UseRateLimiter();
-    app.UseStaticFiles();
     app.UseRouting();
     app.UseCors(corsPolicy);
     app.UseCookiePolicy();
     app.UseSession();
-    
+
     // 🔑 Middleware personalizado para JWT en cookies
     app.UseMiddleware<JwtCookieMiddleware>();
-    
+
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // ✅ Agregar logging de requests con Serilog
+    // Configurar archivos estáticos del frontend DESPUÉS de autorización
+    var frontendPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), ".."));
+    Log.Information($"📁 Intentando servir archivos desde: {frontendPath}");
+
+    if (Directory.Exists(frontendPath))
+    {
+        var fileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(frontendPath);
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = fileProvider,
+            RequestPath = ""
+        });
+
+        Log.Information($"✅ Archivos estáticos configurados desde: {frontendPath}");
+    }
+    else
+    {
+        Log.Warning($"⚠️ Directorio frontend no encontrado: {frontendPath}");
+    }
+
+    // ✅ Agregar logging de requests con Serilog (solo errores)
     app.UseSerilogRequestLogging(options =>
     {
         options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
@@ -509,10 +531,74 @@ try
             ? Serilog.Events.LogEventLevel.Error
             : httpContext.Response.StatusCode > 499
                 ? Serilog.Events.LogEventLevel.Error
-                : Serilog.Events.LogEventLevel.Information;
+                : Serilog.Events.LogEventLevel.Debug; // Debug en lugar de Information
     });
 
     app.MapControllers();
+
+    // Mapear archivos específicos del frontend
+    app.MapGet("/", async context =>
+    {
+        context.Response.Redirect("/Liquid1.html");
+    });
+
+    app.MapGet("/admin", async context =>
+    {
+        context.Response.Redirect("/admin/auth/login.html");
+    });
+
+    // Fallback para SPA - si no es API, servir archivo estático
+    app.MapFallback(async context =>
+    {
+        var path = context.Request.Path.Value;
+
+        // Si la ruta empieza con /api o /Admin, no hacer fallback
+        if (path.StartsWith("/api", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.StatusCode = 404;
+            return;
+        }
+
+        // Intentar servir el archivo
+        var filePath = Path.Combine(frontendPath, path.TrimStart('/'));
+
+        if (File.Exists(filePath))
+        {
+            var contentType = GetContentType(filePath);
+            context.Response.ContentType = contentType;
+            await context.Response.SendFileAsync(filePath);
+        }
+        else
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsync("File not found");
+        }
+    });
+
+    // Helper para content types
+    static string GetContentType(string path)
+    {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".html" => "text/html",
+            ".css" => "text/css",
+            ".js" => "application/javascript",
+            ".json" => "application/json",
+            ".png" => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif" => "image/gif",
+            ".svg" => "image/svg+xml",
+            ".ico" => "image/x-icon",
+            ".woff" => "font/woff",
+            ".woff2" => "font/woff2",
+            ".ttf" => "font/ttf",
+            ".eot" => "application/vnd.ms-fontobject",
+            _ => "application/octet-stream"
+        };
+    }
 
     // Log final antes de iniciar (SIN MOSTRAR CREDENCIALES)
     Log.Information("🚀 OrigamiBack API iniciada correctamente");

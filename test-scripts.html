@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Scripts</title>
+</head>
+<body>
+  <h1>Probando carga de scripts</h1>
+  <div id="output"></div>
+
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- Scripts con rutas absolutas -->
+  <script src="/admin/js/config.js"></script>
+  <script src="/admin/js/api-service.js"></script>
+  <script src="/admin/js/auth.js"></script>
+
+  <script>
+    const output = document.getElementById('output');
+
+    setTimeout(() => {
+      output.innerHTML = `
+        <p>axios: ${typeof axios}</p>
+        <p>apiConfig: ${typeof window.apiConfig}</p>
+        <p>apiService: ${typeof window.apiService}</p>
+        <p>AuthManager: ${typeof AuthManager}</p>
+        <hr>
+        ${window.apiConfig ? `<p>API URL: ${window.apiConfig.apiUrl}</p>` : '<p style="color:red">apiConfig NO CARGÓ</p>'}
+      `;
+    }, 500);
+  </script>
+</body>
+</html>

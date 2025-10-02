@@ -6,8 +6,8 @@ class StorageManager {
   }
 
   init() {
-    // Initialize storage with default data if empty
-    this.initializeDefaultData();
+    // Initialize storage without default seeding to rely solely on backend data
+    // this.initializeDefaultData();
   }
 
   // ==================== PRODUCTS ====================
@@ -122,6 +122,63 @@ class StorageManager {
   getCategory(id) {
     const categories = this.getCategories();
     return categories.find(c => c.id === id) || null;
+  }
+
+  // ==================== MARCAS ====================
+
+  getMarcas() {
+    try {
+      return JSON.parse(localStorage.getItem('admin_marcas') || '[]');
+    } catch (error) {
+      console.error('Error loading marcas:', error);
+      return [];
+    }
+  }
+
+  saveMarcas(marcas) {
+    try {
+      localStorage.setItem('admin_marcas', JSON.stringify(marcas));
+      this.updateTimestamp('marcas');
+      return true;
+    } catch (error) {
+      console.error('Error saving marcas:', error);
+      return false;
+    }
+  }
+
+  addMarca(marca) {
+    const marcas = this.getMarcas();
+    marca.id = this.generateId();
+    marca.createdAt = new Date().toISOString();
+    marca.updatedAt = new Date().toISOString();
+    marcas.push(marca);
+    return this.saveMarcas(marcas) ? marca : null;
+  }
+
+  updateMarca(id, updates) {
+    const marcas = this.getMarcas();
+    const index = marcas.findIndex(m => m.id === id);
+
+    if (index === -1) return false;
+
+    marcas[index] = {
+      ...marcas[index],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    return this.saveMarcas(marcas);
+  }
+
+  deleteMarca(id) {
+    const marcas = this.getMarcas();
+    const filtered = marcas.filter(m => m.id !== id);
+    return this.saveMarcas(filtered);
+  }
+
+  getMarca(id) {
+    const marcas = this.getMarcas();
+    return marcas.find(m => m.id === id) || null;
   }
 
   // ==================== VARIANTS ====================
@@ -369,57 +426,14 @@ class StorageManager {
   // ==================== INITIALIZATION ====================
 
   initializeDefaultData() {
-    // Initialize with sample data if empty
-    if (this.getCategories().length === 0) {
-      this.initializeDefaultCategories();
-    }
-
-    if (this.getProducts().length === 0) {
-      this.initializeDefaultProducts();
-    }
+    // Seeding deshabilitado intencionalmente para usar solo datos del backend
+    return;
   }
 
-  initializeDefaultCategories() {
-    const defaultCategories = [
-      { name: 'Smartphones', description: 'Teléfonos móviles inteligentes', slug: 'smartphones' },
-      { name: 'Tablets', description: 'Tablets y dispositivos móviles', slug: 'tablets' },
-      { name: 'Accesorios', description: 'Accesorios para dispositivos', slug: 'accesorios' },
-      { name: 'Audio', description: 'Auriculares y dispositivos de audio', slug: 'audio' }
-    ];
-
-    defaultCategories.forEach(category => this.addCategory(category));
-  }
 
   initializeDefaultProducts() {
-    const categories = this.getCategories();
-    const smartphoneCategory = categories.find(c => c.slug === 'smartphones');
-
-    if (smartphoneCategory) {
-      const defaultProducts = [
-        {
-          name: 'iPhone 17',
-          description: 'El último iPhone con tecnología de vanguardia',
-          categoryId: smartphoneCategory.id,
-          basePrice: 1299,
-          image: 'https://media.bananacomputer.com/iPhone_17_White_2-up_Screen__USEN.png',
-          brand: 'Apple',
-          model: 'iPhone 17',
-          status: 'active'
-        },
-        {
-          name: 'Samsung Galaxy S25',
-          description: 'El flagship de Samsung más avanzado',
-          categoryId: smartphoneCategory.id,
-          basePrice: 1099,
-          image: 'https://images.samsung.com/is/image/samsung/assets/global/galaxy-s23/galaxy-s23_highlights_kv_mo.jpg',
-          brand: 'Samsung',
-          model: 'Galaxy S25',
-          status: 'active'
-        }
-      ];
-
-      defaultProducts.forEach(product => this.addProduct(product));
-    }
+    // Seeding deshabilitado
+    return;
   }
 }
 

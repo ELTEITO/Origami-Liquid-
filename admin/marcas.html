@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Categorías - Origami Admin</title>
+  <title>Marcas - Origami Admin</title>
   <link rel="stylesheet" href="../Liquid1.css">
   <link rel="stylesheet" href="css/admin.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -16,13 +16,13 @@
     <!-- Main Content -->
     <main class="admin-main">
       <div class="page-header">
-        <h1 class="page-title">Gestión de Categorías</h1>
+        <h1 class="page-title">Gestión de Marcas</h1>
         <div class="header-actions">
-          <button class="btn btn-secondary" onclick="refreshCategories()">
+          <button class="btn btn-secondary" onclick="refreshMarcas()">
             <i class="fa-solid fa-refresh"></i> Actualizar
           </button>
-          <button class="btn btn-primary" onclick="openCategoryModal()">
-            <i class="fa-solid fa-plus"></i> Nueva Categoría
+          <button class="btn btn-primary" onclick="openMarcaModal()">
+            <i class="fa-solid fa-plus"></i> Nueva Marca
           </button>
         </div>
       </div>
@@ -30,15 +30,15 @@
       <!-- Search -->
       <div class="admin-card">
         <div class="card-header">
-          <h3 class="card-title">Buscar Categorías</h3>
+          <h3 class="card-title">Buscar Marca</h3>
         </div>
         <div class="form-field">
-          <input type="text" id="searchInput" placeholder="Buscar por nombre o descripción...">
+          <input type="text" id="searchInput" placeholder="Buscar por nombre...">
         </div>
       </div>
 
-      <!-- Categories Grid -->
-      <div class="categories-grid" id="categoriesGrid">
+      <!-- Marcas Grid -->
+      <div class="marcas-grid" id="marcasGrid">
         <!-- Categories will be populated by JavaScript -->
       </div>
 
@@ -46,57 +46,38 @@
       <div class="admin-card" id="emptyState" style="display: none;">
         <div class="empty-state">
           <i class="fa-solid fa-tags"></i>
-          <h3>No hay categorías</h3>
-          <p>Crea tu primera categoría para organizar tus productos</p>
-          <button class="btn btn-primary" onclick="openCategoryModal()">
-            <i class="fa-solid fa-plus"></i> Crear Categoría
+          <h3>No hay marcas</h3>
+          <p>Crea tu primera marca para organizar tus productos</p>
+          <button class="btn btn-primary" onclick="openMarcaModal()">
+            <i class="fa-solid fa-plus"></i> Crear Marca
           </button>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Category Modal -->
-  <div class="modal" id="categoryModal">
+  <!-- Marca Modal -->
+  <div class="modal" id="marcaModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalTitle">Nueva Categoría</h3>
-        <button class="modal-close" onclick="closeCategoryModal()">
+        <h3 id="modalTitle">Nueva Marca</h3>
+        <button class="modal-close" onclick="closeMarcaModal()">
           <i class="fa-solid fa-times"></i>
         </button>
       </div>
 
-      <form id="categoryForm" class="admin-form">
-        <input type="hidden" id="categoryId">
+      <form id="marcaForm" class="admin-form">
+        <input type="hidden" id="marcaId">
 
         <div class="form-field">
-          <label for="categoryName">Nombre de la Categoría</label>
-          <input type="text" id="categoryName" name="name" required placeholder="Ej: Smartphones">
-        </div>
-
-        <div class="form-field">
-          <label for="categoryDescription">Descripción</label>
-          <textarea id="categoryDescription" name="description" rows="3" placeholder="Descripción de la categoría..."></textarea>
-        </div>
-
-        <div class="form-field">
-          <label for="categoryIcon">Icono (Font Awesome)</label>
-          <input type="text" id="categoryIcon" name="icon" placeholder="Ej: fa-mobile-alt">
-          <small class="form-help">Usa clases de Font Awesome sin el prefijo "fa-solid"</small>
-        </div>
-
-        <div class="form-field">
-          <label>Vista Previa del Icono</label>
-          <div class="icon-preview">
-            <i id="iconPreview" class="fa-solid fa-tags"></i>
-            <span id="iconName">fa-tags</span>
-          </div>
+          <label for="marcaName">Nombre de la Marca</label>
+          <input type="text" id="marcaName" name="name" required placeholder="Ej: Apple">
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" onclick="closeMarcaModal()">Cancelar</button>
           <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-save"></i> Guardar Categoría
+            <i class="fa-solid fa-save"></i> Guardar Marca
           </button>
         </div>
       </form>
@@ -131,13 +112,13 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!-- API Configuration & Service -->
-  <script src="js/config.js?v=2"></script>
-  <script src="js/api-service.js?v=2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api-service.js"></script>
 
-  <script src="js/sidebar.js?v=2"></script>
-  <script src="js/auth.js?v=2"></script>
-  <script src="js/storage.js?v=2"></script>
-  <script src="js/categories.js?v=4"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/marcas.js"></script>
 
   <script>
     // Background rotation

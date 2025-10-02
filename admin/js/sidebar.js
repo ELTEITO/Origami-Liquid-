@@ -4,7 +4,7 @@
     const placeholder = document.getElementById('sidebar-placeholder');
     if(!placeholder) return;
 
-    fetch('components/sidebar.html')
+    fetch(`components/sidebar.html?v=${Date.now()}`, { cache: 'no-store' })
       .then(r=>r.text())
       .then(html=>{
         placeholder.innerHTML = html;

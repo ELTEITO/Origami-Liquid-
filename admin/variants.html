@@ -129,11 +129,11 @@
             <thead>
               <tr>
                 <th>Producto</th>
-                <th>Tipo</th>
-                <th>Nombre</th>
-                <th>Valor</th>
-                <th>Ajuste de Precio</th>
-                <th>Vista Previa</th>
+                <th>RAM</th>
+                <th>Almacenamiento</th>
+                <th>Color</th>
+                <th>Precio</th>
+                <th>Stock</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
               </tr>
@@ -154,8 +154,9 @@
 
   <!-- Include FormVariante Component -->
   <script>
-    // Load FormVariante component
-    fetch('components/FormVariante.html')
+    // Load FormVariante component sin cache
+    const formComponentUrl = `components/FormVariante.html?v=${Date.now()}`;
+    fetch(formComponentUrl, { cache: 'no-store' })
       .then(response => response.text())
       .then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
@@ -168,7 +169,7 @@
         console.error('Error loading FormVariante component:', error);
         // Fallback: try again after a short delay
         setTimeout(() => {
-          fetch('components/FormVariante.html')
+          fetch(formComponentUrl, { cache: 'no-store' })
             .then(response => response.text())
             .then(html => {
               document.body.insertAdjacentHTML('beforeend', html);
@@ -206,6 +207,13 @@
       })
       .catch(error => console.error('Error loading sidebar:', error));
   </script>
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- API Configuration & Service -->
+  <script src="js/config.js"></script>
+  <script src="js/api-service.js"></script>
+
   <script src="js/sidebar.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/storage.js"></script>
@@ -231,7 +239,6 @@
     }
 
     changeBackground();
-    setInterval(changeBackground, 200);
   </script>
 </body>
 </html>

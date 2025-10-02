@@ -10,6 +10,11 @@ class CategoriesController {
   }
 
   init() {
+    try {
+      localStorage.removeItem("admin_categories");
+    } catch (e) {
+      /* ignore */
+    }
     this.loadCategories();
     this.setupEventListeners();
     this.setupSlugGeneration();
@@ -18,12 +23,12 @@ class CategoriesController {
 
   setupEventListeners() {
     // Search
-    document.getElementById('searchInput').addEventListener('input', (e) => {
+    document.getElementById("searchInput").addEventListener("input", (e) => {
       this.filterCategories(e.target.value);
     });
 
     // Category form
-    document.getElementById('categoryForm').addEventListener('submit', (e) => {
+    document.getElementById("categoryForm").addEventListener("submit", (e) => {
       e.preventDefault();
       this.saveCategory();
     });
@@ -39,51 +44,63 @@ class CategoriesController {
     window.viewCategoryProducts = (id) => this.viewCategoryProducts(id);
   }
 
-  setupSlugGeneration() {
-    const nameInput = document.getElementById('categoryName');
-    const slugInput = document.getElementById('categorySlug');
-
-    nameInput.addEventListener('input', (e) => {
-      const name = e.target.value;
-      const slug = this.generateSlug(name);
-      slugInput.value = slug;
-    });
-  }
-
   setupIconPreview() {
-    const iconInput = document.getElementById('categoryIcon');
-    const iconPreview = document.getElementById('iconPreview');
-    const iconName = document.getElementById('iconName');
+    const iconInput = document.getElementById("categoryIcon");
+    const iconPreview = document.getElementById("iconPreview");
+    const iconName = document.getElementById("iconName");
 
-    iconInput.addEventListener('input', (e) => {
+    iconInput.addEventListener("input", (e) => {
       const iconClass = e.target.value.trim();
       if (iconClass) {
         iconPreview.className = `fa-solid fa-${iconClass}`;
         iconName.textContent = `fa-${iconClass}`;
       } else {
-        iconPreview.className = 'fa-solid fa-tags';
-        iconName.textContent = 'fa-tags';
+        iconPreview.className = "fa-solid fa-tags";
+        iconName.textContent = "fa-tags";
       }
     });
   }
 
-  generateSlug(name) {
-    return name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/[-\s]+/g, '-') // Replace spaces and hyphens
-      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-  }
-
   loadCategories() {
     try {
-      this.categories = storageManager.getCategories();
-      this.filteredCategories = [...this.categories];
-      this.renderCategories();
+      const grid = document.getElementById("categoriesGrid");
+      if (grid) grid.innerHTML = "";
+      if (
+        window.apiService &&
+        typeof window.apiService.getCategories === "function"
+      ) {
+        window.apiService
+          .getCategories()
+          .then((data) => {
+            console.log("[Categories] API data:", data);
+            const list = Array.isArray(data) ? data : data?.items || [];
+            this.categories = list.map((c) => ({
+              id: c.id ?? c.Id,
+              name: c.nombre || c.Nombre || c.name || "",
+              description: c.descripcion || c.Descripcion || "",
+              icon: c.icon || c.Icon || "",
+              createdAt: c.createdAt || c.CreatedAt || new Date().toISOString(),
+            }));
+            this.filteredCategories = [...this.categories];
+            this.renderCategories();
+          })
+          .catch((err) => {
+            console.error("API getCategories error:", err);
+            this.showError("Error al cargar las categorías");
+            this.filteredCategories = [];
+            this.renderCategories();
+          });
+      } else {
+        console.warn(
+          "[Categories] API no disponible. No se mostrarán datos locales."
+        );
+        this.categories = [];
+        this.filteredCategories = [];
+        this.renderCategories();
+      }
     } catch (error) {
-      console.error('Error loading categories:', error);
-      this.showError('Error al cargar las categorías');
+      console.error("Error loading categories:", error);
+      this.showError("Error al cargar las categorías");
     }
   }
 
@@ -93,10 +110,10 @@ class CategoriesController {
     if (!search) {
       this.filteredCategories = [...this.categories];
     } else {
-      this.filteredCategories = this.categories.filter(category =>
-        category.name.toLowerCase().includes(search) ||
-        category.description.toLowerCase().includes(search) ||
-        category.slug.toLowerCase().includes(search)
+      this.filteredCategories = this.categories.filter(
+        (category) =>
+          category.name.toLowerCase().includes(search) ||
+          category.description.toLowerCase().includes(search)
       );
     }
 
@@ -104,41 +121,41 @@ class CategoriesController {
   }
 
   renderCategories() {
-    const grid = document.getElementById('categoriesGrid');
-    const emptyState = document.getElementById('emptyState');
+    const grid = document.getElementById("categoriesGrid");
+    const emptyState = document.getElementById("emptyState");
+    if (grid) grid.innerHTML = "";
 
     if (this.filteredCategories.length === 0) {
-      grid.innerHTML = '';
-      emptyState.style.display = 'block';
+      if (grid) grid.innerHTML = "";
+      emptyState.style.display = "block";
       return;
     }
 
-    emptyState.style.display = 'none';
+    emptyState.style.display = "none";
 
     // Get product counts for each category
-    const products = storageManager.getProducts();
-    const productCounts = {};
+    const productCounts = {}; // Opcional: integrar vía API en el futuro
 
-    products.forEach(product => {
-      const categoryId = product.categoryId;
-      productCounts[categoryId] = (productCounts[categoryId] || 0) + 1;
-    });
+    grid.innerHTML = this.filteredCategories
+      .map((category) => {
+        const productCount = productCounts[category.id] || 0;
+        const iconClass = category.icon ? `fa-${category.icon}` : "fa-tags";
 
-    grid.innerHTML = this.filteredCategories.map(category => {
-      const productCount = productCounts[category.id] || 0;
-      const iconClass = category.icon ? `fa-${category.icon}` : 'fa-tags';
-
-      return `
+        return `
         <div class="category-card glass-effect">
           <div class="category-header">
             <div class="category-icon">
               <i class="fa-solid ${iconClass}"></i>
             </div>
             <div class="category-actions">
-              <button class="btn btn-small btn-secondary" onclick="editCategory('${category.id}')" title="Editar">
+              <button class="btn btn-small btn-secondary" onclick="editCategory('${
+                category.id
+              }')" title="Editar">
                 <i class="fa-solid fa-edit"></i>
               </button>
-              <button class="btn btn-small btn-danger" onclick="deleteCategory('${category.id}')" title="Eliminar">
+              <button class="btn btn-small btn-danger" onclick="deleteCategory('${
+                category.id
+              }')" title="Eliminar">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -146,153 +163,189 @@ class CategoriesController {
 
           <div class="category-content">
             <h3 class="category-name">${category.name}</h3>
-            <p class="category-description">${category.description || 'Sin descripción'}</p>
-            <div class="category-slug">/${category.slug}</div>
+            <p class="category-description">${
+              category.description || "Sin descripción"
+            }</p>
           </div>
 
           <div class="category-footer">
             <div class="category-stats">
               <span class="product-count">
                 <i class="fa-solid fa-box"></i>
-                ${productCount} producto${productCount !== 1 ? 's' : ''}
+                ${productCount} producto${productCount !== 1 ? "s" : ""}
               </span>
             </div>
-            ${productCount > 0 ? `
+            ${
+              productCount > 0
+                ? `
               <button class="btn btn-small btn-primary" onclick="viewCategoryProducts('${category.id}')">
                 Ver productos
               </button>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
 
           <div class="category-meta">
-            <small>Creada: ${new Date(category.createdAt).toLocaleDateString()}</small>
+            <small>Creada: ${new Date(
+              category.createdAt
+            ).toLocaleDateString()}</small>
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
 
     this.addCategoryGridStyles();
   }
 
   openCategoryModal(categoryId = null) {
-    const modal = document.getElementById('categoryModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const form = document.getElementById('categoryForm');
+    const modal = document.getElementById("categoryModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const form = document.getElementById("categoryForm");
 
     if (categoryId) {
-      // Edit mode
-      const category = storageManager.getCategory(categoryId);
-      if (!category) {
-        this.showError('Categoría no encontrada');
-        return;
+      const fillForm = (c) => {
+        if (!c) return;
+        modalTitle.textContent = "Editar Categoría";
+        document.getElementById("categoryId").value = c.id ?? c.Id;
+        document.getElementById("categoryName").value =
+          c.nombre || c.Nombre || c.name || "";
+        document.getElementById("categoryDescription").value =
+          c.descripcion || c.Descripcion || c.description || "";
+        document.getElementById("categoryIcon").value = c.icon || c.Icon || "";
+        // Trigger icon preview
+        const iconInput = document.getElementById("categoryIcon");
+        iconInput.dispatchEvent(new Event("input"));
+        modal.classList.add("active");
+      };
+
+      const inMemory = (this.categories || []).find(
+        (x) =>
+          String(x.id) === String(categoryId) ||
+          String(x.Id) === String(categoryId)
+      );
+      if (inMemory) {
+        fillForm(inMemory);
+      } else if (
+        window.apiService &&
+        typeof window.apiService.getCategory === "function"
+      ) {
+        window.apiService
+          .getCategory(categoryId)
+          .then((data) => fillForm(data))
+          .catch(() => {
+            this.showError("Categoría no encontrada");
+          });
+      } else {
+        this.showError("Categoría no encontrada");
       }
-
-      modalTitle.textContent = 'Editar Categoría';
-      document.getElementById('categoryId').value = category.id;
-      document.getElementById('categoryName').value = category.name;
-      document.getElementById('categorySlug').value = category.slug;
-      document.getElementById('categoryDescription').value = category.description || '';
-      document.getElementById('categoryIcon').value = category.icon || '';
-
-      // Trigger icon preview
-      const iconInput = document.getElementById('categoryIcon');
-      iconInput.dispatchEvent(new Event('input'));
-
     } else {
-      // Create mode
-      modalTitle.textContent = 'Nueva Categoría';
+      modalTitle.textContent = "Nueva Categoría";
       form.reset();
-      document.getElementById('categoryId').value = '';
-
-      // Reset icon preview
-      document.getElementById('iconPreview').className = 'fa-solid fa-tags';
-      document.getElementById('iconName').textContent = 'fa-tags';
+      document.getElementById("categoryId").value = "";
+      document.getElementById("iconPreview").className = "fa-solid fa-tags";
+      document.getElementById("iconName").textContent = "fa-tags";
+      modal.classList.add("active");
     }
-
-    modal.classList.add('active');
   }
 
   closeCategoryModal() {
-    const modal = document.getElementById('categoryModal');
-    modal.classList.remove('active');
+    const modal = document.getElementById("categoryModal");
+    modal.classList.remove("active");
   }
 
   saveCategory() {
     try {
-      const formData = new FormData(document.getElementById('categoryForm'));
-      const categoryId = document.getElementById('categoryId').value;
+      const formData = new FormData(document.getElementById("categoryForm"));
+      const categoryId = document.getElementById("categoryId").value;
 
       const categoryData = {
-        name: formData.get('name').trim(),
-        slug: formData.get('slug').trim(),
-        description: formData.get('description').trim(),
-        icon: formData.get('icon').trim()
+        name: formData.get("name").trim(),
+        description: formData.get("description").trim(),
+        icon: formData.get("icon").trim(),
       };
 
-      // Validation
       if (!categoryData.name) {
-        this.showError('El nombre de la categoría es obligatorio');
+        this.showError("El nombre de la categoría es obligatorio");
         return;
       }
 
-      if (!categoryData.slug) {
-        this.showError('El slug es obligatorio');
-        return;
-      }
-
-      // Check for duplicate slugs
-      const existingCategory = this.categories.find(cat =>
-        cat.slug === categoryData.slug && cat.id !== categoryId
-      );
-
-      if (existingCategory) {
-        this.showError('Ya existe una categoría con ese slug');
-        return;
-      }
-
-      let success = false;
-
-      if (categoryId) {
-        // Update existing category
-        success = storageManager.updateCategory(categoryId, categoryData);
-      } else {
-        // Create new category
-        const newCategory = storageManager.addCategory(categoryData);
-        success = !!newCategory;
-      }
-
-      if (success) {
-        this.showSuccess(categoryId ? 'Categoría actualizada correctamente' : 'Categoría creada correctamente');
+      const after = () => {
+        this.showSuccess(
+          categoryId
+            ? "Categoría actualizada correctamente"
+            : "Categoría creada correctamente"
+        );
         this.closeCategoryModal();
         this.loadCategories();
-      } else {
-        this.showError('Error al guardar la categoría');
-      }
+      };
 
+      if (
+        window.apiService &&
+        typeof window.apiService.createCategory === "function"
+      ) {
+        const payload = categoryId
+          ? {
+              Id: parseInt(categoryId),
+              Nombre: categoryData.name,
+              Descripcion: categoryData.description,
+              Icon: categoryData.icon,
+            }
+          : {
+              Nombre: categoryData.name,
+              Descripcion: categoryData.description,
+              Icon: categoryData.icon,
+            };
+
+        if (categoryId) {
+          window.apiService
+            .updateCategory(categoryId, payload)
+            .then(after)
+            .catch((err) => {
+              console.error("API updateCategory error:", err);
+              this.showError("Error al actualizar la categoría");
+            });
+        } else {
+          window.apiService
+            .createCategory(payload)
+            .then(after)
+            .catch((err) => {
+              console.error("API createCategory error:", err);
+              this.showError("Error al crear la categoría");
+            });
+        }
+      } else {
+        this.showError("API no disponible");
+      }
     } catch (error) {
-      console.error('Error saving category:', error);
-      this.showError('Error al guardar la categoría');
+      console.error("Error saving category:", error);
+      this.showError("Error al guardar la categoría");
     }
   }
 
   deleteCategory(categoryId) {
     // Check if category has products
     const products = storageManager.getProducts();
-    const hasProducts = products.some(product => product.categoryId === categoryId);
+    const hasProducts = products.some(
+      (product) => product.categoryId === categoryId
+    );
 
     if (hasProducts) {
-      this.showError('No se puede eliminar una categoría que tiene productos asociados');
+      this.showError(
+        "No se puede eliminar una categoría que tiene productos asociados"
+      );
       return;
     }
 
     this.categoryToDelete = categoryId;
-    const modal = document.getElementById('deleteModal');
-    modal.classList.add('active');
+    const modal = document.getElementById("deleteModal");
+    modal.classList.add("active");
   }
 
   closeDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    modal.classList.remove('active');
+    const modal = document.getElementById("deleteModal");
+    modal.classList.remove("active");
     this.categoryToDelete = null;
   }
 
@@ -300,19 +353,29 @@ class CategoriesController {
     if (!this.categoryToDelete) return;
 
     try {
-      const success = storageManager.deleteCategory(this.categoryToDelete);
-
-      if (success) {
-        this.showSuccess('Categoría eliminada correctamente');
+      const after = () => {
+        this.showSuccess("Categoría eliminada correctamente");
         this.closeDeleteModal();
         this.loadCategories();
-      } else {
-        this.showError('Error al eliminar la categoría');
-      }
+      };
 
+      if (
+        window.apiService &&
+        typeof window.apiService.deleteCategory === "function"
+      ) {
+        window.apiService
+          .deleteCategory(this.categoryToDelete)
+          .then(after)
+          .catch((err) => {
+            console.error("API deleteCategory error:", err);
+            this.showError("Error al eliminar la categoría");
+          });
+      } else {
+        this.showError("API no disponible");
+      }
     } catch (error) {
-      console.error('Error deleting category:', error);
-      this.showError('Error al eliminar la categoría');
+      console.error("Error deleting category:", error);
+      this.showError("Error al eliminar la categoría");
     }
   }
 
@@ -322,10 +385,10 @@ class CategoriesController {
   }
 
   addCategoryGridStyles() {
-    if (document.querySelector('#category-grid-styles')) return;
+    if (document.querySelector("#category-grid-styles")) return;
 
-    const styles = document.createElement('style');
-    styles.id = 'category-grid-styles';
+    const styles = document.createElement("style");
+    styles.id = "category-grid-styles";
     styles.textContent = `
       .categories-grid {
         display: grid;
@@ -399,16 +462,7 @@ class CategoriesController {
         margin: 0 0 0.5rem 0;
       }
 
-      .category-slug {
-        font-family: 'Courier New', monospace;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        color: var(--text-muted-color);
-        display: inline-block;
-      }
-
+     
       .category-footer {
         display: flex;
         justify-content: space-between;
@@ -497,7 +551,7 @@ class CategoriesController {
 
       .delete-warning i {
         font-size: 3rem;
-        color: #f44336;
+        color: #0b64a1;
         margin-bottom: 1rem;
       }
 
@@ -532,31 +586,33 @@ class CategoriesController {
   }
 
   showSuccess(message) {
-    this.showToast(message, 'success');
+    this.showToast(message, "success");
   }
 
   showError(message) {
-    this.showToast(message, 'error');
+    this.showToast(message, "error");
   }
 
   showToast(message, type) {
-    const toast = document.createElement('div');
+    const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
-      <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+      <i class="fa-solid fa-${
+        type === "success" ? "check-circle" : "exclamation-circle"
+      }"></i>
       ${message}
     `;
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
+      toast.style.animation = "slideIn 0.3s ease reverse";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
 }
 
 // Initialize categories controller when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   window.categoriesController = new CategoriesController();
 });

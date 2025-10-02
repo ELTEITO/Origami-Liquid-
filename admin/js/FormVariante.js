@@ -32,47 +32,41 @@ class FormVariante {
   }
 
   setupTypeFields() {
-    const typeSelect = document.getElementById('variantType');
-    const colorFields = document.getElementById('colorFields');
-    if (typeSelect && colorFields && !this.typeBound) {
-      typeSelect.addEventListener('change', (e) => {
-        colorFields.style.display = (e.target.value === 'color') ? 'block' : 'none';
-        this.updatePreview();
-      });
-      this.typeBound = true;
-    }
+    // Este método ya no es necesario ya que el formulario no tiene campo variantType
+    // El formulario siempre muestra Ram, Almacenamiento y Color
+    this.typeBound = true;
   }
 
   setupPreview() {
     const colorPicker = document.getElementById('variantColorHex');
     const colorText = document.getElementById('variantColorText');
-    if (!colorPicker || !colorText || this.previewBound) return;
+    if (this.previewBound) return;
 
-    colorPicker.addEventListener('input', (e) => {
-      colorText.value = e.target.value;
-      this.updatePreview();
-    });
-    colorText.addEventListener('input', (e) => {
-      const color = e.target.value;
-      if (/^#[0-9A-F]{6}$/i.test(color)) {
-        colorPicker.value = color;
-      }
-      this.updatePreview();
-    });
+    if (colorPicker && colorText) {
+      colorPicker.addEventListener('input', (e) => {
+        colorText.value = e.target.value;
+        this.updatePreview();
+      });
+      colorText.addEventListener('input', (e) => {
+        const color = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(color)) {
+          colorPicker.value = color;
+        }
+        this.updatePreview();
+      });
+    }
 
-    ['variantName', 'variantType', 'variantImage'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener('input', () => this.updatePreview());
-    });
+    const imageField = document.getElementById('variantImage');
+    if (imageField) {
+      imageField.addEventListener('input', () => this.updatePreview());
+    }
 
     this.previewBound = true;
   }
 
   updatePreview() {
-    const type = document.getElementById('variantType').value;
-    const name = document.getElementById('variantName').value;
     const colorHex = document.getElementById('variantColorHex')?.value || '';
-    const image = document.getElementById('variantImage').value;
+    const image = document.getElementById('variantImage')?.value || '';
 
     const previewColor = document.getElementById('previewColor');
     const previewText = document.getElementById('previewText');
@@ -83,12 +77,12 @@ class FormVariante {
     // Reset
     if (previewColor) previewColor.style.display = 'none';
     if (previewImage) previewImage.style.display = 'none';
-    previewText.textContent = name || 'Sin vista previa';
+    previewText.textContent = 'Sin vista previa';
 
-    if (type === 'color' && colorHex && previewColor) {
+    if (colorHex && previewColor) {
       previewColor.style.backgroundColor = colorHex;
       previewColor.style.display = 'block';
-      previewText.textContent = `${name} (${colorHex})`;
+      previewText.textContent = `Color: ${colorHex}`;
     }
 
     if (image && previewImage) {
@@ -99,14 +93,22 @@ class FormVariante {
   }
 
   loadProducts() {
-    const products = storageManager.getProducts();
     const variantProduct = document.getElementById('variantProduct');
-    if (variantProduct) {
-      variantProduct.innerHTML = '<option value="">Seleccionar producto</option>';
-      products.forEach(p => {
-        const option = new Option(`${p.name} (${p.brand} ${p.model})`, p.id);
-        variantProduct.appendChild(option);
-      });
+    if (!variantProduct) return;
+    variantProduct.innerHTML = '<option value="">Seleccionar producto</option>';
+    if (window.apiService && typeof window.apiService.getProducts === 'function') {
+      window.apiService.getProducts()
+        .then(list => {
+          const products = Array.isArray(list) ? list : (list?.items || []);
+          products.forEach(p => {
+            const marca = p.marca || p.Marca || '';
+            const modelo = p.modelo || p.Modelo || '';
+            const id = p.id ?? p.Id;
+            const option = new Option(`${name || modelo || id} (${marca} ${modelo})`, id);
+            variantProduct.appendChild(option);
+          });
+        })
+        .catch(err => console.error('Error cargando productos para variantes:', err));
     }
   }
 
@@ -114,6 +116,11 @@ class FormVariante {
     const modal = document.getElementById('variantModal');
     const modalTitle = document.getElementById('modalTitle');
     const form = document.getElementById('variantForm');
+
+    if (!modal || !form) {
+      console.error('Modal o formulario no encontrado');
+      return;
+    }
 
     // Ensure bindings
     this.bindFormHandlers();
@@ -124,37 +131,36 @@ class FormVariante {
     if (variantId) {
       this.isEditMode = true;
       this.currentVariantId = variantId;
-      const variant = storageManager.getVariant(variantId);
-      if (!variant) return this.showError('Variante no encontrada');
 
-      modalTitle.textContent = 'Editar Variante';
-      document.getElementById('variantId').value = variant.id;
-      document.getElementById('variantProduct').value = variant.productId;
-      document.getElementById('variantType').value = variant.type;
-      document.getElementById('variantName').value = variant.name;
-      document.getElementById('variantValue').value = variant.value;
-      document.getElementById('variantPriceAdjustment').value = variant.priceAdjustment || 0;
-      document.getElementById('variantSortOrder').value = variant.sortOrder || 0;
-      document.getElementById('variantImage').value = variant.image || '';
-      if (variant.type === 'color' && variant.colorHex) {
-        document.getElementById('variantColorHex').value = variant.colorHex;
-        document.getElementById('variantColorText').value = variant.colorHex;
-      }
-      document.getElementById('variantType').dispatchEvent(new Event('change'));
+      // Cargar variante desde API
+      window.apiService.getVariant(variantId)
+        .then(variant => {
+          modalTitle.textContent = 'Editar Variante';
+          document.getElementById('variantId').value = variant.id || variant.Id;
+          document.getElementById('variantProduct').value = variant.productoId || variant.ProductoId;
+          document.getElementById('variantRam').value = variant.ram || variant.Ram || '';
+          document.getElementById('variantStorage').value = variant.almacenamiento || variant.Almacenamiento || '';
+          document.getElementById('variantColor').value = variant.color || variant.Color || '';
+          document.getElementById('productBasePrice').value = variant.precio || variant.Precio || 0;
+          document.getElementById('productBaseStock').value = variant.stock || variant.Stock || 0;
+
+          this.updatePreview();
+          modal.classList.add('active');
+        })
+        .catch(err => {
+          console.error('Error cargando variante:', err);
+          this.showError('Error al cargar la variante');
+        });
     } else {
       this.isEditMode = false;
       this.currentVariantId = null;
       modalTitle.textContent = 'Nueva Variante';
       form.reset();
       document.getElementById('variantId').value = '';
-      document.getElementById('variantPriceAdjustment').value = '0';
-      document.getElementById('variantSortOrder').value = '0';
-      const colorFields = document.getElementById('colorFields');
-      if (colorFields) colorFields.style.display = 'none';
-    }
 
-    this.updatePreview();
-    modal.classList.add('active');
+      this.updatePreview();
+      modal.classList.add('active');
+    }
   }
 
   closeModal() {
@@ -169,43 +175,53 @@ class FormVariante {
 
       const variantData = {
         productId: formData.get('productId'),
-        type: formData.get('type'),
-        name: formData.get('name'),
-        value: formData.get('value'),
-        priceAdjustment: parseFloat(formData.get('priceAdjustment')) || 0,
-        sortOrder: parseInt(formData.get('sortOrder')) || 0,
-        image: formData.get('image')
+        ram: (formData.get('ram') || '').trim(),
+        storage: (formData.get('storage') || '').trim(),
+        color: (formData.get('color') || '').trim(),
+        price: parseFloat(formData.get('price')) || 0,
+        stock: parseInt(formData.get('stock')) || 0
       };
 
       if (variantData.type === 'color') {
         variantData.colorHex = formData.get('colorHex');
       }
 
-      if (!variantData.productId || !variantData.type || !variantData.name || !variantData.value) {
+      if (!variantData.productId || !variantData.ram || !variantData.storage || !variantData.color) {
         this.showError('Por favor completa todos los campos obligatorios');
         return;
       }
 
-      let success = false;
-      if (variantId) {
-        success = storageManager.updateVariant(variantId, variantData);
-      } else {
-        const newVariant = storageManager.addVariant(variantData);
-        success = !!newVariant;
-      }
+      const payload = {
+        ProductoId: parseInt(variantData.productId),
+        Ram: variantData.ram,
+        Almacenamiento: variantData.storage,
+        Color: variantData.color,
+        Precio: variantData.price,
+        Stock: variantData.stock
+      };
 
-      if (success) {
+      const after = () => {
         this.showSuccess(variantId ? 'Variante actualizada correctamente' : 'Variante creada correctamente');
         this.closeModal();
         if (window.variantsController) {
           window.variantsController.loadVariants();
         }
-        // Also refresh if using variants page
         if (window.refreshVariants) {
           window.refreshVariants();
         }
+      };
+
+      if (variantId) {
+        payload.Id = parseInt(variantId);
+        window.apiService.updateVariant(variantId, payload).then(after).catch(err => {
+          console.error('Error API al actualizar variante:', err);
+          this.showError('Error al actualizar la variante');
+        });
       } else {
-        this.showError('Error al guardar la variante');
+        window.apiService.createVariant(payload).then(after).catch(err => {
+          console.error('Error API al crear variante:', err);
+          this.showError('Error al crear la variante');
+        });
       }
     } catch (err) {
       console.error('Error saving variant:', err);

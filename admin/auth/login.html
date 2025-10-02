@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - Origami</title>
-  <link rel="stylesheet" href="../Liquid1.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="/Liquid1.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -13,17 +13,17 @@
     <div class="login-card glass-effect">
       <div class="login-header">
         <div class="logo">
-          <img src="../img/Origami.jpeg" alt="Origami" class="logo-img">
+          <img src="/img/Origami.jpeg" alt="Origami" class="logo-img">
           <h1>Origami Admin</h1>
         </div>
       </div>
 
       <form id="loginForm" class="login-form">
         <div class="form-group">
-          <label for="username">Usuario</label>
+          <label for="email">Email</label>
           <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="username" name="username" required placeholder="Ingresa tu usuario">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="email" name="email" required placeholder="Ingresa tu email">
           </div>
         </div>
 
@@ -48,27 +48,28 @@
     </div>
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- API Configuration & Service -->
+  <script src="/admin/js/config.js" onerror="console.error('Error cargando config.js')"></script>
+  <script src="/admin/js/api-service.js" onerror="console.error('Error cargando api-service.js')"></script>
+  <script src="/admin/js/auth.js" onerror="console.error('Error cargando auth.js')"></script>
+
   <script>
-    // Background rotation
-    const backgroundImages = [
-      'https://assets.codepen.io/252820/unsplash-mountain3.webp',
-    ];
-
-    let currentImageIndex = 0;
-    const body = document.body;
-
-    function changeBackground() {
-      const nextImage = new Image();
-      const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-      nextImage.src = backgroundImages[nextImageIndex];
-
-      body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
-      currentImageIndex = nextImageIndex;
-    }
-
-    changeBackground();
-    setInterval(changeBackground, 200);
+    // Verificar que los scripts se cargaron correctamente
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('=== VERIFICACIÓN DE SCRIPTS ===');
+      console.log('apiConfig:', typeof window.apiConfig !== 'undefined' ? '✓' : '✗');
+      console.log('ApiService:', typeof window.ApiService !== 'undefined' ? '✓' : '✗');
+      console.log('apiService:', typeof window.apiService !== 'undefined' ? '✓' : '✗');
+      console.log('authManager:', typeof authManager !== 'undefined' ? '✓' : '✗');
+      console.log('================================');
+    });
+  </script>
+  <script>
+    // Background - solo establecer una vez
+    document.body.style.backgroundImage = "url('https://assets.codepen.io/252820/unsplash-mountain3.webp')";
 
     function togglePassword() {
       const passwordInput = document.getElementById('password');

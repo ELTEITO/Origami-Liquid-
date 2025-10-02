@@ -1,190 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Publi iPhone 17</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Publi iPhone 17</title>
 
-  <!-- Opcional: tus estilos globales -->
- <link rel="stylesheet" href="Liquid1.css">
-  <link rel="stylesheet" href="Footer/footer.css">
-  <link rel="stylesheet" href="tienda.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Opcional: tus estilos globales -->
+    <link rel="stylesheet" href="Liquid1.css" />
+    <link rel="stylesheet" href="Footer/footer.css" />
+    <link rel="stylesheet" href="tienda.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
 
-  <!-- Estilos de esta publi -->
-  <link rel="stylesheet" href="publi.css" />
-</head>
-<body>
-  <div id="navbar-placeholder"></div> 
-  <!-- ===== ÚNICA SECCIÓN DE LA PUBLI ===== -->
-  <section class="publi-wrap glass-effect">
-    <div class="publi-media">
-      <img id="publiImg"
-           src="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20White%201%20Mascom%20International.webp"
-           alt="iPhone 17" />
-    </div>
-
-    <div class="publi-info">
-      <h1 class="publi-title" id="publiModel">iPhone 17</h1>
-
-      <!-- COLOR -->
-      <div class="publi-panel">
-        <div class="publi-label">Color</div>
-        <div class="publi-row" id="colorRow">
-          <!-- data-delta = ajuste de precio por color -->
-          <button class="publi-swatch is-active" title="White"
-                  data-color="White" data-delta="0"
-                  data-img="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20White%201%20Mascom%20International.webp"
-                  style="--c:#f2f2f2"></button>
-
-          <button class="publi-swatch" title="Black"
-                  data-color="Black" data-delta="20"
-                  data-img="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20Black%201%20Mascom%20International.webp"
-                  style="--c:#0b0b0c"></button>
-
-          <button class="publi-swatch" title="Blue"
-                  data-color="Blue" data-delta="10"
-                  data-img="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20Mist%20Blue%201%20Mascom%20International.webp"
-                  style="--c:#3b82f6"></button>
-
-          <button class="publi-swatch" title="Pink"
-                  data-color="Pink" data-delta="0"
-                  data-img="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20Lavender%201%20Mascom%20International.webp"
-                  style="--c:#ff80ab"></button>
-
-          <button class="publi-swatch" title="Green"
-                  data-color="Green" data-delta="0"
-                  data-img="https://www.mascomintl.com/themes/images/mascom/iPhone%2017%20Sage%201%20Mascom%20International.webp"
-                  style="--c:#22c55e"></button>
-        </div>
+    <!-- Estilos de esta publi -->
+    <link rel="stylesheet" href="publi.css" />
+  </head>
+  <body>
+    <div id="navbar-placeholder"></div>
+    <!-- ===== ÚNICA SECCIÓN DE LA PUBLI ===== -->
+    <section class="publi-wrap glass-effect">
+      <div class="publi-media">
+        <img id="publiImg" src="" alt="iPhone 17" />
       </div>
 
-      <!-- ALMACENAMIENTO -->
-      <div class="publi-panel">
-        <div class="publi-label">Almacenamiento</div>
-        <div class="publi-row" id="capRow">
-          <!-- Sólo una activa. data-delta = ajuste por capacidad -->
-          <button class="publi-opt"        data-cap="128" data-delta="-100">128 GB</button>
-          <button class="publi-opt is-active" data-cap="256" data-delta="0">256 GB</button>
-          <button class="publi-opt"        data-cap="512" data-delta="200">512 GB</button>
-        </div>
-      </div>
+      <div class="publi-info">
+        <h1 class="publi-title" id="publiModel">Cargando...</h1>
 
-      <!-- CANTIDAD -->
-      <div class="publi-panel">
-        <div class="publi-label">Cantidad</div>
-        <div class="publi-row publi-qty" id="qtyRow">
-          <button class="publi-opt" data-q="-1">−</button>
-          <span id="qty">1</span>
-          <button class="publi-opt" data-q="+1">+</button>
-        </div>
-        <div class="publi-help">Máximo 5 unidades.</div>
-      </div>
-
-      <!-- PRECIO + CTA -->
-      <div class="publi-price-cta">
-        <div>
-          <div class="publi-price" id="price">$1,299</div>
-          <div class="publi-small" id="summary">
-            iPhone 17 · <span id="sumColor">White</span> · <span id="sumCap">256 GB</span> · x<span id="sumQty">1</span>
+        <!-- COLOR -->
+        <div class="publi-panel">
+          <div class="publi-label">Color</div>
+          <div class="publi-row" id="colorRow">
+            <!-- Dinámico desde API -->
           </div>
         </div>
 
-        <!-- Agrega tu redirección en data-redirect -->
-        <button id="buyBtn" class="publi-btn primary"
-                data-redirect="Aca la redirección">
-          Comprar
-        </button>
-      </div>
-    </div>
-  </section>
+        <!-- RAM -->
+        <div class="publi-panel">
+          <div class="publi-label">RAM</div>
+          <div class="publi-row" id="ramRow">
+            <!-- Dinámico desde API -->
+          </div>
+        </div>
 
+        <!-- ALMACENAMIENTO -->
+        <div class="publi-panel">
+          <div class="publi-label">Almacenamiento</div>
+          <div class="publi-row" id="capRow">
+            <!-- Dinámico desde API -->
+          </div>
+        </div>
+
+        <!-- CANTIDAD -->
+        <div class="publi-panel">
+          <div class="publi-label">Cantidad</div>
+          <div class="publi-row publi-qty" id="qtyRow">
+            <button class="publi-opt" data-q="-1">−</button>
+            <span id="qty">1</span>
+            <button class="publi-opt" data-q="+1">+</button>
+          </div>
+          <div class="publi-help">Máximo 5 unidades.</div>
+        </div>
+
+        <!-- PRECIO + CTA -->
+        <div class="publi-price-cta">
+          <div>
+            <div class="publi-price" id="price">$0</div>
+            <div class="publi-small" id="summary">
+              <span id="sumModel">Producto</span> · <span id="sumRam">-</span> ·
+              <span id="sumColor">-</span> · <span id="sumCap">-</span> · x<span
+                id="sumQty"
+                >1</span
+              >
+            </div>
+          </div>
+
+          <!-- Agrega tu redirección en data-redirect -->
+          <button
+            id="buyBtn"
+            class="publi-btn primary"
+            data-redirect="Aca la redirección"
+          >
+            Comprar
+          </button>
+        </div>
+      </div>
+    </section>
 
     <div id="footer-placeholder"></div>
 
-  <!-- ===== FIN SECCIÓN ===== -->
+    <!-- ===== FIN SECCIÓN ===== -->
 
-  <!-- LÓGICA (comportamiento) -->
-   <script>
-  // Carga Navbar y Footer
-  fetch("Navbar/navbar.html")
-    .then(r=>r.text())
-    .then(h=>{ document.getElementById("navbar-placeholder").innerHTML = h; });
+    <!-- LÓGICA (comportamiento) -->
+    <script>
+      // Carga Navbar y Footer
+      fetch("Navbar/navbar.html")
+        .then((r) => r.text())
+        .then((h) => {
+          document.getElementById("navbar-placeholder").innerHTML = h;
+        });
 
-  fetch("Footer/footer.html")
-    .then(r=>r.text())
-    .then(h=>{ document.getElementById("footer-placeholder").innerHTML = h; });
-</script>
-  <script>
-    const BASE = 1299; // precio base USD 256GB White
-    const fmt = v => "$" + v.toLocaleString("en-US");
+      fetch("Footer/footer.html")
+        .then((r) => r.text())
+        .then((h) => {
+          document.getElementById("footer-placeholder").innerHTML = h;
+        });
+    </script>
 
-    const img = document.getElementById("publiImg");
-     img.addEventListener('error',()=>{ img.src='https://via.placeholder.com/900x900?text=iPhone+17'; },{once:true});
-    const priceEl = document.getElementById("price");
-    const sumColor = document.getElementById("sumColor");
-    const sumCap = document.getElementById("sumCap");
-    const sumQty = document.getElementById("sumQty");
-
-    let colorDelta = 0, capDelta = 0, qty = 1;
-
-    function calc() {
-      const unit = BASE + colorDelta + capDelta;
-      const total = unit * qty;
-      priceEl.textContent = fmt(total);
-    }
-
-    // Colores
-    document.getElementById("colorRow").addEventListener("click", e=>{
-      const b = e.target.closest(".publi-swatch"); if(!b) return;
-      document.querySelectorAll(".publi-swatch").forEach(x=>x.classList.remove("is-active"));
-      b.classList.add("is-active");
-      colorDelta = +b.dataset.delta || 0;
-      sumColor.textContent = b.dataset.color;
-      if (b.dataset.img) img.src = b.dataset.img;
-      calc();
-    });
-
-    // Capacidad
-    document.getElementById("capRow").addEventListener("click", e=>{
-      const b = e.target.closest(".publi-opt"); if(!b) return;
-      document.querySelectorAll("#capRow .publi-opt").forEach(x=>x.classList.remove("is-active"));
-      b.classList.add("is-active");
-      capDelta = +b.dataset.delta || 0;
-      sumCap.textContent = b.dataset.cap + " GB";
-      calc();
-    });
-
-    // Cantidad 1..5
-    document.getElementById("qtyRow").addEventListener("click", e=>{
-      const b = e.target.closest(".publi-opt"); if(!b) return;
-      const op = b.dataset.q;
-      if (op === "+1") qty = Math.min(5, qty + 1);
-      if (op === "-1") qty = Math.max(1, qty - 1);
-      document.getElementById("qty").textContent = qty;
-      sumQty.textContent = qty;
-      calc();
-    });
-
-    // Comprar: redirección opcional
-    document.getElementById("buyBtn").addEventListener("click", e=>{
-      const url = e.currentTarget.dataset.redirect;
-      if (url) {
-        // misma pestaña
-        window.location.href = url;
-        // o nueva pestaña: window.open(url,'_blank');
-      } else {
-        alert("Compra: " + document.getElementById('summary').textContent + " · Total " + priceEl.textContent);
-      }
-    });
-
-    // Fallback si el CDN bloquea la imagen
-    img.addEventListener('error', ()=>{
-      img.src = 'https://via.placeholder.com/600x600?text=iPhone+17';
-    }, { once:true });
-
-    calc();
-  </script>
-
-</body>
+    <!-- Script principal del producto -->
+    <script src="js/publi.js"></script>
+  </body>
 </html>

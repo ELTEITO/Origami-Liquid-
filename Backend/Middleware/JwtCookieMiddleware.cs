@@ -60,16 +60,21 @@ namespace OrigamiBack.Middleware
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? "");
+                // Alinear con las claves usadas en Program.cs e IUsuarioService (JWTKey:*)
+                var secret = _configuration["JWTKey:Secret"] ?? _configuration["JWT:Secret"] ?? string.Empty;
+                var validIssuer = _configuration["JWTKey:ValidIssuer"] ?? _configuration["JWT:ValidIssuer"];
+                var validAudience = _configuration["JWTKey:ValidAudience"] ?? _configuration["JWT:ValidAudience"];
+
+                var key = Encoding.UTF8.GetBytes(secret);
                 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["JWT:ValidIssuer"],
+                    ValidIssuer = validIssuer,
                     ValidateAudience = true,
-                    ValidAudience = _configuration["JWT:ValidAudience"],
+                    ValidAudience = validAudience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);

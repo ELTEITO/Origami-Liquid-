@@ -52,11 +52,7 @@ namespace OrigamiBack.Services
 
             if (cate == null) return null;
 
-            return new CategoriaDto
-            {
-                Id = cate.Id,
-                Nombre = cate.Nombre
-            };
+            return _mapper.Map<CategoriaDto>(cate);
 
         }
 
@@ -68,6 +64,8 @@ namespace OrigamiBack.Services
             if (categorias != null)
             {
                 categorias.Nombre = categoriaDto.Nombre;
+                categorias.Descripcion = categoriaDto.Descripcion;
+                categorias.Icon = categoriaDto.Icon;
                 _dbContext.Categorias.Update(categorias);
                 await _dbContext.SaveChangesAsync();
 

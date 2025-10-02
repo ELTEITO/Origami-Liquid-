@@ -71,14 +71,12 @@
                 <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
-                <th>Precio Base</th>
                 <th>Estado</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="productsTableBody">
-              <!-- Products will be populated by JavaScript -->
             </tbody>
           </table>
         </div>
@@ -93,25 +91,22 @@
 
   <!-- Include FormProducto Component -->
   <script>
-    // Load FormProducto component
-    fetch('components/FormProducto.html')
+    // Load FormProducto component sin cache
+    const formComponentUrl = `components/FormProducto.html?v=${Date.now()}`;
+    fetch(formComponentUrl, { cache: 'no-store' })
       .then(response => response.text())
       .then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
-        // Initialize FormProducto after component is loaded
         if (window.FormProducto) {
           window.formProducto = new FormProducto();
         }
       })
       .catch(error => {
         console.error('Error loading FormProducto component:', error);
-        // Fallback: try again after a short delay
         setTimeout(() => {
-          fetch('components/FormProducto.html')
+          fetch(formComponentUrl, { cache: 'no-store' })
             .then(response => response.text())
-            .then(html => {
-              document.body.insertAdjacentHTML('beforeend', html);
-            });
+            .then(html => { document.body.insertAdjacentHTML('beforeend', html); });
         }, 1000);
       });
   </script>
@@ -136,11 +131,18 @@
   </div>
 
   <!-- Scripts -->
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- API Configuration & Service -->
+  <script src="js/config.js?v=2"></script>
+  <script src="js/api-service.js?v=3"></script>
+
   <script src="js/sidebar.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/storage.js"></script>
-  <script src="js/FormProducto.js"></script>
-  <script src="js/products.js"></script>
+  <script src="js/FormProducto.js?v=2"></script>
+  <script src="js/products.js?v=3"></script>
 
   <script>
     // Background rotation
@@ -161,7 +163,6 @@
     }
 
     changeBackground();
-    setInterval(changeBackground, 200);
   </script>
 </body>
 </html>

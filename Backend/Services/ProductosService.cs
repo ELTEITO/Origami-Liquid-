@@ -4,6 +4,11 @@ using OrigamiBack.Data.Modelos;
 using OrigamiBack.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace OrigamiBack.Services
 {
@@ -46,6 +51,31 @@ namespace OrigamiBack.Services
         public async Task<ProductoDto> AddAsync(ProductoDto productoDto)
         {
             var entidad = _mapper.Map<Productos>(productoDto);
+            // Validar que la marca exista si el catálogo de marcas está habilitado
+            if (!string.IsNullOrWhiteSpace(entidad.Marca))
+            {
+                var exists = await _context.Set<OrigamiBack.Data.Modelos.Marcas>()
+                    .AsNoTracking()
+                    .AnyAsync(m => m.Nombre!.ToLower() == entidad.Marca.ToLower());
+                if (!exists)
+                {
+                    throw new InvalidOperationException($"La marca '{entidad.Marca}' no existe. Cárgala primero en el catálogo.");
+                }
+            }
+            // Convertir imagen entrante (base64) a WEBP para optimizar almacenamiento
+            if (!string.IsNullOrEmpty(productoDto.Img))
+            {
+                try
+                {
+                    var originalBytes = Convert.FromBase64String(productoDto.Img);
+                    entidad.Img = ConvertToWebpBytes(originalBytes);
+                }
+                catch
+                {
+                    // Si falla la conversión, conservar bytes originales
+                    entidad.Img = Convert.FromBase64String(productoDto.Img);
+                }
+            }
             _context.Productos.Add(entidad);
             await _context.SaveChangesAsync();
             return _mapper.Map<ProductoDto>(entidad);
@@ -187,11 +217,32 @@ namespace OrigamiBack.Services
 
             if (entidad != null)
             {
+                // Validar marca
+                if (!string.IsNullOrWhiteSpace(productoDto.Marca))
+                {
+                    var exists = await _context.Set<OrigamiBack.Data.Modelos.Marcas>()
+                        .AsNoTracking()
+                        .AnyAsync(m => m.Nombre!.ToLower() == productoDto.Marca.ToLower());
+                    if (!exists)
+                    {
+                        throw new InvalidOperationException($"La marca '{productoDto.Marca}' no existe. Cárgala primero en el catálogo.");
+                    }
+                }
                 entidad.Marca = productoDto.Marca;
                 entidad.Modelo = productoDto.Modelo;
                 entidad.Categoria = productoDto.Categoria;
                 if (!string.IsNullOrEmpty(productoDto.Img))
-                    entidad.Img = Convert.FromBase64String(productoDto.Img);
+                {
+                    try
+                    {
+                        var originalBytes = Convert.FromBase64String(productoDto.Img);
+                        entidad.Img = ConvertToWebpBytes(originalBytes);
+                    }
+                    catch
+                    {
+                        entidad.Img = Convert.FromBase64String(productoDto.Img);
+                    }
+                }
 
                 _context.Productos.Update(entidad);
                 await _context.SaveChangesAsync();
@@ -238,6 +289,21 @@ namespace OrigamiBack.Services
         {
             return await _context.Productos
                 .AnyAsync(p => p.Marca == marca && p.Modelo == modelo);
+        }
+
+        private static byte[] ConvertToWebpBytes(byte[] original)
+        {
+            using var inStream = new MemoryStream(original);
+            using var image = Image.Load<Rgba32>(inStream);
+            var encoder = new WebpEncoder
+            {
+                Quality = 80, // calidad balanceada
+                FileFormat = WebpFileFormatType.Lossy
+            };
+            using var outStream = new MemoryStream();
+            image.Mutate(x => x.AutoOrient());
+            image.Save(outStream, encoder);
+            return outStream.ToArray();
         }
     }
 }

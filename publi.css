@@ -130,12 +130,64 @@ body{ min-height:100vh; display:flex; flex-direction:column; }
 }
 
 /* ---------- Swatches de color ---------- */
-/* mapa por data-color para no depender de --c inline */
-.publi-swatch[data-color="White"]{ background:#f2f2f2; }
-.publi-swatch[data-color="Black"]{ background:#0b0b0c; }
-.publi-swatch[data-color="Blue"] { background:#3b82f6; }
-.publi-swatch[data-color="Pink"] { background:#ff80ab; }
-.publi-swatch[data-color="Green"]{ background:#22c55e; }
+/* Usar variable CSS --c para colores dinámicos */
+.publi-swatch {
+  background: var(--c, #9ca3af);
+}
+
+/* Soporte para colores hardcodeados (fallback) */
+.publi-swatch[data-color="White"],
+.publi-swatch[data-color="white"],
+.publi-swatch[data-color="Blanco"],
+.publi-swatch[data-color="blanco"] { background:#f2f2f2; }
+
+.publi-swatch[data-color="Black"],
+.publi-swatch[data-color="black"],
+.publi-swatch[data-color="Negro"],
+.publi-swatch[data-color="negro"] { background:#0b0b0c; }
+
+.publi-swatch[data-color="Blue"],
+.publi-swatch[data-color="blue"],
+.publi-swatch[data-color="Azul"],
+.publi-swatch[data-color="azul"] { background:#3b82f6; }
+
+.publi-swatch[data-color="Pink"],
+.publi-swatch[data-color="pink"],
+.publi-swatch[data-color="Rosa"],
+.publi-swatch[data-color="rosa"] { background:#ff80ab; }
+
+.publi-swatch[data-color="Green"],
+.publi-swatch[data-color="green"],
+.publi-swatch[data-color="Verde"],
+.publi-swatch[data-color="verde"] { background:#22c55e; }
+
+.publi-swatch[data-color="Red"],
+.publi-swatch[data-color="red"],
+.publi-swatch[data-color="Rojo"],
+.publi-swatch[data-color="rojo"] { background:#ef4444; }
+
+.publi-swatch[data-color="Yellow"],
+.publi-swatch[data-color="yellow"],
+.publi-swatch[data-color="Amarillo"],
+.publi-swatch[data-color="amarillo"] { background:#fbbf24; }
+
+.publi-swatch[data-color="Purple"],
+.publi-swatch[data-color="purple"],
+.publi-swatch[data-color="Purpura"],
+.publi-swatch[data-color="purpura"],
+.publi-swatch[data-color="Púrpura"],
+.publi-swatch[data-color="púrpura"] { background:#a855f7; }
+
+.publi-swatch[data-color="Gray"],
+.publi-swatch[data-color="gray"],
+.publi-swatch[data-color="Gris"],
+.publi-swatch[data-color="gris"] { background:#6b7280; }
+
+.publi-swatch[data-color="Orange"],
+.publi-swatch[data-color="orange"],
+.publi-swatch[data-color="Naranja"],
+.publi-swatch[data-color="naranja"] { background:#f97316; }
+
 .publi-swatch:hover{ transform: translateY(-2px); }
 .publi-swatch.is-active{
   box-shadow: 0 0 0 2px rgba(255,255,255,.35), 0 0 22px rgba(255,255,255,.18);
@@ -237,6 +289,25 @@ body{ min-height:100vh; display:flex; flex-direction:column; }
   outline:2px solid #fff8; outline-offset:2px;
 }
 
-/* Tipografía y separación más uniforme en los “cuadrados” */
+/* Tipografía y separación más uniforme en los "cuadrados" */
 .publi-opt{ letter-spacing:.2px; }
 .publi-row{ gap:14px; }
+
+/* Botones deshabilitados */
+.publi-opt:disabled,
+.publi-swatch:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+  filter: grayscale(0.5);
+}
+
+.publi-opt:disabled:hover,
+.publi-swatch:disabled:hover {
+  transform: none;
+}
+
+.publi-opt:disabled.is-active,
+.publi-swatch:disabled.is-active {
+  background: var(--glass-bg-strong);
+  box-shadow: none;
+}

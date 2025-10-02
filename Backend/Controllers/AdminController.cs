@@ -24,17 +24,17 @@ namespace OrigamiBack.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IUsuarioService _usuarioService;
-        private readonly ICelularesService _celularesService;
-        public AdminController(ApplicationDbContext context, IConfiguration config, IUsuarioService usuarioService, ICelularesService equiposService)
+        //private readonly ICelularesService _celularesService;
+        public AdminController(ApplicationDbContext context, IConfiguration config, IUsuarioService usuarioService)
         {
             _context = context;
             _configuration = config;
             _usuarioService = usuarioService;
-            _celularesService = equiposService;
         }
 
         [HttpPost("registro")]
-         [RateLimit("registro", 2, 10)]
+        [RateLimit("registro", 2, 10)]
+         [AllowAnonymous]
         public async Task<IActionResult> CrearAdmin([FromBody] Usuario usuario)
         {
             try
@@ -47,9 +47,11 @@ namespace OrigamiBack.Controllers
                 usuario.Rol = "ADMIN";
                 var usuarioCreado = await _usuarioService.CrearUsuarioAsync(usuario);
 
-                return Ok(new { 
+                return Ok(new
+                {
                     message = "Administrador creado correctamente",
-                    usuario = new {
+                    usuario = new
+                    {
                         id = usuarioCreado.Id,
                         email = usuarioCreado.Email,
                         rol = usuarioCreado.Rol
@@ -91,26 +93,35 @@ namespace OrigamiBack.Controllers
                 }
 
                 var token = _usuarioService.GenerarToken(usuario);
-                
+
                 // Configurar cookie httpOnly
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true, // Solo en HTTPS
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(24), // Expira en 24 horas
-                    Path = "/"
+                    Secure = false,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddHours(24),
+                    Path = "/",
+                    IsEssential = true // Evita que CookiePolicy la bloquee por consentimiento
+                    // No establecer Domain para que funcione en mismo origen
                 };
 
-                // En desarrollo, permitir HTTP
-                if (_configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
+                // En producción, usar configuración más segura
+                if (_configuration["ASPNETCORE_ENVIRONMENT"] == "Production")
                 {
-                    cookieOptions.Secure = false;
+                    cookieOptions.Secure = true;
+                    cookieOptions.SameSite = SameSiteMode.Strict;
                 }
 
                 Response.Cookies.Append("AuthToken", token, cookieOptions);
-                
-                return Ok(new 
+
+                // Log para debug
+                Console.WriteLine($"\n========== LOGIN ==========");
+                Console.WriteLine($"✅ Usuario: {usuario.Email}");
+                Console.WriteLine($"✅ Cookie configurada: HttpOnly={cookieOptions.HttpOnly}, SameSite={cookieOptions.SameSite}");
+                Console.WriteLine($"===========================\n");
+
+                return Ok(new
                 {
                     message = "Inicio de sesión exitoso",
                     usuario = new
@@ -134,7 +145,13 @@ namespace OrigamiBack.Controllers
             try
             {
                 // Eliminar cookie de autenticación
-                Response.Cookies.Delete("AuthToken");
+                // Coincidir Path y atributos clave para garantizar borrado en todos los navegadores
+                Response.Cookies.Delete("AuthToken", new CookieOptions
+                {
+                    Path = "/",
+                    SameSite = SameSiteMode.Lax,
+                    Secure = _configuration["ASPNETCORE_ENVIRONMENT"] == "Production"
+                });
                 
                 return Ok(new { message = "Sesión cerrada exitosamente" });
             }
@@ -150,30 +167,56 @@ namespace OrigamiBack.Controllers
         {
             try
             {
+                Console.WriteLine("\n========== VERIFY SESSION ==========");
+                Console.WriteLine($"Cookies recibidas: {Request.Cookies.Count}");
+
+                foreach (var cookie in Request.Cookies)
+                {
+                    Console.WriteLine($"  - {cookie.Key}");
+                }
+
                 // Verificar si hay token en cookies
                 if (Request.Cookies.TryGetValue("AuthToken", out var token))
                 {
+                    Console.WriteLine($"✅ AuthToken ENCONTRADO");
+                    Console.WriteLine($"Usuario autenticado: {User.Identity?.IsAuthenticated}");
+
                     // El middleware JwtCookieMiddleware ya habrá validado el token
-                    // Si llegamos aquí y hay token, significa que es válido
                     if (User.Identity?.IsAuthenticated == true)
                     {
-                        return Ok(new 
-                        { 
+                        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+                        Console.WriteLine($"✅ SESIÓN VÁLIDA para: {email}");
+                        Console.WriteLine($"====================================\n");
+
+                        return Ok(new
+                        {
                             isAuthenticated = true,
                             usuario = new
                             {
                                 id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                                email = User.FindFirst(ClaimTypes.Email)?.Value,
+                                email = email,
                                 rol = User.FindFirst(ClaimTypes.Role)?.Value
                             }
                         });
                     }
+                    else
+                    {
+                        Console.WriteLine("❌ Token presente pero NO autenticado (middleware falló)");
+                        Console.WriteLine($"====================================\n");
+                    }
                 }
-                
+                else
+                {
+                    Console.WriteLine("❌ AuthToken NO encontrado");
+                    Console.WriteLine($"====================================\n");
+                }
+
                 return Ok(new { isAuthenticated = false });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Exception: {ex.Message}");
+                Console.WriteLine($"====================================\n");
                 return StatusCode(500, new { message = "Error al verificar sesión", error = ex.Message });
             }
         }
@@ -184,84 +227,6 @@ namespace OrigamiBack.Controllers
         }
 
         // ============================= ENDPOINTS PROTEGIDOS =============================
-
-
-        [Authorize(Roles = "ADMIN")]
-        [HttpGet]
-        public async Task<IActionResult> GetCelulares()
-        {
-            try
-            {
-                var celulares = await _celularesService.ObtenerEquiposUnicosAsync();
-                return Ok(celulares);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Error al obtener los celulares", error = ex.Message });
-            }
-        }   
-
-        [Authorize(Roles = "ADMIN")]
-        [HttpGet("marcas")]
-        public async Task<IActionResult> GetMarcas()
-        {
-            try
-            {
-                var marcas = await _celularesService.ObtenerMarcasAsync();
-                return Ok(marcas);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Error al obtener las marcas", error = ex.Message });
-            }
-        }
-
-        [HttpGet("modelos")]
-        public async Task<IActionResult> GetModelos()
-        {
-            try
-            {
-                var modelos = await _celularesService.ObtenerModelosAsync();
-                return Ok(modelos);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Error al obtener los modelos", error = ex.Message });
-            }
-        }
-
-        [HttpGet("modelos/{marca}")]
-        public async Task<IActionResult> GetModelosPorMarca(string marca)
-        {
-            try
-            {
-                var marcas = await _celularesService.ObtenerModelosPorMarcaAsync(marca);
-                return Ok(marcas);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Error al obtener los modelos por marca", error = ex.Message });
-            }
-
-        }
-
-        [HttpGet("info/{marca}/{modelo}")]
-        public async Task<IActionResult> GetModulosByModelo(string marca, string modelo)
-        {
-            try
-            {
-                var info = await _celularesService.ObtenerInfoPorMarcaYModeloAsync(marca, modelo);
-                if (info == null || !info.Any())
-                {
-                    return NotFound(new { message = "No se encontraron resultados para la marca y modelo especificados." });
-                }
-                return Ok(info);
-            }
-            catch
-            {
-                return BadRequest(new { message = "Error al obtener la información por marca y modelo." });
-            }
-        }
-        
+      
     }
 }

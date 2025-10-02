@@ -18,6 +18,9 @@
       <div class="page-header">
         <h1 class="page-title">Dashboard</h1>
         <div class="header-actions">
+          <a class="btn btn-secondary" href="/Liquid1.html">
+            <i class="fa-solid fa-house"></i> Ver Home
+          </a>
           <button class="btn btn-secondary" onclick="refreshData()">
             <i class="fa-solid fa-refresh"></i> Actualizar
           </button>
@@ -86,6 +89,13 @@
   </div>
 
   <!-- Scripts -->
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- API Configuration & Service -->
+  <script src="js/config.js"></script>
+  <script src="js/api-service.js"></script>
+
   <script src="js/sidebar.js?v=1"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/storage.js?v=1"></script>
@@ -110,7 +120,6 @@
     }
 
     changeBackground();
-    setInterval(changeBackground, 200);
   </script>
 </body>
 </html>
