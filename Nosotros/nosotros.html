@@ -26,7 +26,7 @@
             </div>
           </a>
           <p class="role">CEO</p>
-          <h3 class="name">Usuario 1</h3>
+          <h3 class="name">Thiago Brizuela</h3>
         </article>
 
         <article class="member">
@@ -36,7 +36,7 @@
             </div>
           </a>
           <p class="role">CEO</p>
-          <h3 class="name">Usuario 2</h3>
+          <h3 class="name">Santiago Heredia</h3>
         </article>
 
         <article class="member">
@@ -46,7 +46,7 @@
             </div>
           </a>
           <p class="role">CEO</p>
-          <h3 class="name">Usuario 3</h3>
+          <h3 class="name">Ivan Oishi</h3>
         </article>
       </div>
     </section>
@@ -128,222 +128,14 @@
           <strong id="cartTotal">$0</strong>
         </div>
         <div class="cart-modal__actions">
-          <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">Enviar Lista</button>
+          <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">Cotizar</button>
         </div>
       </footer>
     </div>
   </div>
-  
-   <div id="footer-placeholder"></div>
 
-  <script>
-    // Fondo igual al resto del sitio: usa data-bg o setéalo desde tu rotador existente.
-    (function(){
-      var url = document.body.getAttribute('data-bg');
-      if(url){ document.body.style.backgroundImage = "url('"+url+"')"; }
-    })();
-
-    // Configuración del formulario de contacto con EmailJS
-    document.addEventListener('DOMContentLoaded', function() {
-      // Inicializar EmailJS
-      initEmailJS();
-      
-      // Configurar el formulario
-      const form = document.getElementById('contact-form');
-      const submitBtn = document.getElementById('submit-btn');
-      const btnText = document.getElementById('btn-text');
-      const btnLoading = document.getElementById('btn-loading');
-      const formMessage = document.getElementById('form-message');
-      
-      function showMessage(message, isError = false) {
-        const alertIcon = formMessage.querySelector('.alert-icon');
-        const alertText = formMessage.querySelector('.alert-text');
-        
-        // Configurar el contenido
-        alertText.textContent = message;
-        alertIcon.className = isError ? 'alert-icon fa-solid fa-exclamation-triangle' : 'alert-icon fa-solid fa-check-circle';
-        
-        // Configurar el estilo
-        formMessage.className = `form-alert ${isError ? 'error' : 'success'}`;
-        formMessage.style.display = 'block';
-        
-        // Auto-ocultar después de 6 segundos
-        setTimeout(() => {
-          formMessage.style.display = 'none';
-        }, 6000);
-      }
-      
-      function setLoading(loading) {
-        if (loading) {
-          submitBtn.disabled = true;
-          btnText.style.display = 'none';
-          btnLoading.style.display = 'inline';
-        } else {
-          submitBtn.disabled = false;
-          btnText.style.display = 'inline';
-          btnLoading.style.display = 'none';
-        }
-      }
-      
-      function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-      }
-      
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validar formulario
-        const fromEmail = document.getElementById('from_email').value.trim();
-        const fromName = document.getElementById('from_name').value.trim();
-        const message = document.getElementById('message').value.trim();
-        
-        if (!fromEmail || !fromName || !message) {
-          showMessage('Por favor, completa todos los campos.', true);
-          return;
-        }
-        
-        if (!isValidEmail(fromEmail)) {
-          showMessage('Por favor, ingresa un email válido.', true);
-          return;
-        }
-        
-        setLoading(true);
-        
-        // Enviar email usando la función de configuración
-        const formData = {
-          from_name: fromName,
-          from_email: fromEmail,
-          message: message
-        };
-        
-        sendContactEmail(formData)
-          .then(function(response) {
-            showMessage('¡Mensaje enviado exitosamente! Te responderemos pronto.');
-            form.reset(); // Limpiar formulario
-          })
-          .catch(function(error) {
-            console.error('Error al enviar email:', error);
-            showMessage('Error al enviar el mensaje. Por favor, intenta nuevamente o contáctanos por WhatsApp.', true);
-          })
-          .finally(function() {
-            setLoading(false);
-          });
-      });
-    });
-
-       const backgroundImages = [
-            'https://assets.codepen.io/252820/unsplash-mountain3.webp',
-        ];
-
-        let currentImageIndex = 0;
-        const body = document.body;
-
-        function changeBackground() {
-            const nextImage = new Image();
-            const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-            nextImage.src = backgroundImages[nextImageIndex];
-
-            body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
-            
-            currentImageIndex = nextImageIndex;
-        }
-
-        changeBackground();
-
-      
-    
-  </script> 
   <div id="footer-placeholder"></div>
-  <script>
-   fetch("/Footer/footer.html").then(r=>r.text()).then(html=>{
-     document.getElementById("footer-placeholder").innerHTML = html;
-   });
- </script>
- <script>
-  fetch("/Navbar/navbar.html")
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById("navbar-placeholder").innerHTML = html;
-      // Ejecutar la función de autenticación después de cargar el navbar
-      setTimeout(async () => {
-        if (typeof initNavbarAuth === 'function') {
-          await initNavbarAuth();
-        } else {
-          console.error('initNavbarAuth no está disponible');
-        }
-      }, 100);
-    });
-
-  // La función initNavbarAuth ahora está en navbar-auth.js
-</script>
-<!--<script>
-  // Botón flotante para volver al panel si el admin está autenticado
-  (async function addReturnToAdminIfAuthenticated() {
-    try {
-      // Cargar axios si no está disponible (ya se usa en admin, pero aquí puede no estar)
-      if (typeof axios === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
-        await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; document.head.appendChild(script); });
-      }
-
-      const res = await axios.get('/Admin/verify', { withCredentials: true });
-      if (res?.data?.isAuthenticated) {
-        const btn = document.createElement('a');
-        btn.href = '/admin/dashboard.html';
-        btn.setAttribute('aria-label', 'Volver al panel de administración');
-        btn.style.position = 'fixed';
-        btn.style.bottom = '20px';
-        btn.style.right = '20px';
-        btn.style.zIndex = '10000';
-        btn.style.padding = '0.8rem 1rem';
-        btn.style.borderRadius = '999px';
-        btn.style.background = 'rgba(255,255,255,0.15)';
-        btn.style.backdropFilter = 'blur(10px)';
-        btn.style.border = '1px solid rgba(255,255,255,0.25)';
-        btn.style.color = '#fff';
-        btn.style.textDecoration = 'none';
-        btn.style.display = 'flex';
-        btn.style.alignItems = 'center';
-        btn.style.gap = '.5rem';
-        btn.innerHTML = '<i class="fa-solid fa-gauge"></i> Volver al Panel';
-        document.body.appendChild(btn);
-      }
-    } catch (e) {
-      // Usuario no autenticado, no mostrar botón
-    }
-  })();
-</script>-->
-<script src="/js/cart.js"></script>
-<script src="js/emailjs-config.js"></script>
-<script>
-  // Inicializar EmailJS cuando se carga la página
-  document.addEventListener('DOMContentLoaded', function() {
-    // Forzar actualización del formulario para mostrar todos los campos
-    const form = document.getElementById('contact-form');
-    if (form) {
-      form.style.display = 'none';
-      setTimeout(() => {
-        form.style.display = 'flex';
-      }, 100);
-    }
-    
-    // Cargar EmailJS desde CDN
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-    script.onload = function() {
-      // Inicializar EmailJS
-      initEmailJS();
-    };
-    document.head.appendChild(script);
-  });
-</script>
-<div id="footer-placeholder"></div>
-<script>
- fetch("Footer/footer.html").then(r=>r.text()).then(html=>{
-   document.getElementById("footer-placeholder").innerHTML = html;
- });
-</script>
+  <script src="/js/cart.js"></script>
+  <script src="js/contacto.js"></script>
 </body>
 </html>

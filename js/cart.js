@@ -29,7 +29,7 @@
         const row = document.createElement('div');
         row.className = 'cart-item';
         row.innerHTML = `
-          <img class="cart-item__img" src="${it.img || 'img/Origami.jpeg'}" alt="${it.model}">
+          <img class="cart-item__img" src="${it.img || 'img/CanvaLogoWeb.webp'}" alt="${it.model}">
           <div class="cart-item__info">
             <div class="cart-item__title">${it.model}</div>
             <div class="cart-item__meta">${it.ram} · ${it.storage} · ${it.color || ''}</div>
@@ -67,7 +67,7 @@
     renderModal();
   }
 
-  // Función para enviar lista por WhatsApp
+  // Función para Cotizar por WhatsApp
   function sendToWhatsApp(){
     const items = getItems();
     if(items.length === 0){

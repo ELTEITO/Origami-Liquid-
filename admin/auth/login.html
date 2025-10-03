@@ -13,7 +13,7 @@
     <div class="login-card glass-effect">
       <div class="login-header">
         <div class="logo">
-          <img src="/img/Origami.jpeg" alt="Origami" class="logo-img">
+          <img src="/img/CanvaLogoWeb.webp" alt="Origami" class="logo-img">
           <h1>Origami Admin</h1>
         </div>
       </div>
@@ -55,36 +55,6 @@
   <script src="/admin/js/config.js" onerror="console.error('Error cargando config.js')"></script>
   <script src="/admin/js/api-service.js" onerror="console.error('Error cargando api-service.js')"></script>
   <script src="/admin/js/auth.js" onerror="console.error('Error cargando auth.js')"></script>
-
-  <script>
-    // Verificar que los scripts se cargaron correctamente
-    window.addEventListener('DOMContentLoaded', () => {
-      console.log('=== VERIFICACIÓN DE SCRIPTS ===');
-      console.log('apiConfig:', typeof window.apiConfig !== 'undefined' ? '✓' : '✗');
-      console.log('ApiService:', typeof window.ApiService !== 'undefined' ? '✓' : '✗');
-      console.log('apiService:', typeof window.apiService !== 'undefined' ? '✓' : '✗');
-      console.log('authManager:', typeof authManager !== 'undefined' ? '✓' : '✗');
-      console.log('================================');
-    });
-  </script>
-  <script>
-    // Background - solo establecer una vez
-    document.body.style.backgroundImage = "url('https://assets.codepen.io/252820/unsplash-mountain3.webp')";
-
-    function togglePassword() {
-      const passwordInput = document.getElementById('password');
-      const toggleIcon = document.getElementById('toggleIcon');
-
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-      }
-    }
-  </script>
+  <script src="/admin/js/login-ui.js"></script>
 </body>
 </html>

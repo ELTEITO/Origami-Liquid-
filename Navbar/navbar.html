@@ -8,7 +8,7 @@
         height: 36px;
         border-radius: 50%;
         display: inline-block;
-        background: url(../img/Origami.jpeg) center/cover;
+        background: url(../img/CanvaLogoWeb.webp?v=2) center/cover;
         overflow: hidden;
       "
     >
@@ -44,30 +44,4 @@
   </nav>
 </header>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const authButton = document.getElementById('authButton');
-
-    // Verificar múltiples posibles nombres de keys
-    const token = localStorage.getItem('token') ||
-                  localStorage.getItem('authToken') ||
-                  localStorage.getItem('jwt') ||
-                  localStorage.getItem('accessToken') ||
-                  sessionStorage.getItem('token') ||
-                  sessionStorage.getItem('authToken');
-
-    console.log('Token encontrado:', token); // Para debug
-    console.log('LocalStorage keys:', Object.keys(localStorage)); // Para debug
-
-    if (token && token !== 'null' && token !== '') {
-        // Usuario logueado - cambiar a "Volver al Panel"
-        authButton.href = '../admin/dashboard.html';
-        authButton.setAttribute('aria-label', 'Volver al Panel');
-        authButton.querySelector('.btn-login__label').textContent = 'Volver al Panel';
-        authButton.querySelector('i').className = 'fa-solid fa-gauge';
-        console.log('Botón actualizado a "Ir al Panel"');
-    } else {
-        console.log('No hay token válido encontrado');
-    }
-});
-</script>
+<script src="../js/navbar.js"></script>
