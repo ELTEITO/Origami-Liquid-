@@ -8,7 +8,7 @@ class StoreIntegration {
   init() {
     this.loadProductsFromAdmin();
     this.setupProductInteractions();
-    this.updateProductDisplay();
+    // this.updateProductDisplay();
   }
 
   // Load products from admin storage
@@ -234,6 +234,11 @@ class StoreIntegration {
       notification.style.animation = 'slideInRight 0.3s ease reverse';
       setTimeout(() => notification.remove(), 300);
     }, 3000);
+  }
+
+  updateProductDisplay() {
+    // Method for updating product display - can be expanded as needed
+    console.log('Product display updated');
   }
 }
 

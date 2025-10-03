@@ -153,6 +153,69 @@ p{ color: var(--text-muted); }
 }
 .email-form ::placeholder{ color: var(--text-muted); }
 
+/* ====== ALERTAS DEL FORMULARIO ====== */
+.form-alert {
+  margin-top: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 25px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,.18);
+  animation: slideIn 0.3s ease-out;
+}
+
+.form-alert.success {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.form-alert.error {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: rgba(244, 67, 54, 0.4);
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  gap: 12px;
+}
+
+.alert-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.form-alert.success .alert-icon {
+  color: #4caf50;
+}
+
+.form-alert.error .alert-icon {
+  color: #f44336;
+}
+
+.alert-text {
+  flex: 1;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ====== Responsive ====== */
 @media (max-width: 900px){
   .team, .contact-grid{ grid-template-columns: 1fr 1fr; }

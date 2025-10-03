@@ -1,0 +1,91 @@
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #2c3e50; line-height: 1.6; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+  
+  <!-- Header con gradiente -->
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center; color: white;">
+    <div style="display: inline-block; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 50%; margin-bottom: 15px;">
+      <span style="font-size: 32px;">📱</span>
+    </div>
+    <h1 style="margin: 0; font-size: 28px; font-weight: 300; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Origami</h1>
+    <p style="margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">Tecnología de Vanguardia</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div style="padding: 30px 25px;">
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin-bottom: 25px;">
+      <h2 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 22px; font-weight: 600;">📧 Nueva Consulta Recibida</h2>
+      <p style="margin: 0; color: #6c757d; font-size: 16px;">Has recibido una nueva consulta desde tu sitio web Origami.</p>
+    </div>
+
+    <!-- Información del cliente -->
+    <div style="background: #ffffff; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+      <h3 style="margin: 0 0 15px 0; color: #495057; font-size: 18px; font-weight: 600; display: flex; align-items: center;">
+        <span style="background: #667eea; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 10px;">👤</span>
+        Información del Cliente
+      </h3>
+      
+      <div style="margin-bottom: 12px;">
+        <strong style="color: #495057; display: inline-block; width: 80px;">Nombre:</strong>
+        <span style="color: #2c3e50; font-weight: 500;">{{from_name}}</span>
+      </div>
+      
+      <div style="margin-bottom: 12px;">
+        <strong style="color: #495057; display: inline-block; width: 80px;">Email:</strong>
+        <a href="mailto:{{from_email}}" style="color: #667eea; text-decoration: none; font-weight: 500;">{{from_email}}</a>
+      </div>
+      
+      <div style="margin-bottom: 0;">
+        <strong style="color: #495057; display: inline-block; width: 80px;">Fecha:</strong>
+        <span style="color: #6c757d;">{{current_date}} a las {{current_time}}</span>
+      </div>
+    </div>
+
+    <!-- Mensaje -->
+    <div style="background: #ffffff; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+      <h3 style="margin: 0 0 15px 0; color: #495057; font-size: 18px; font-weight: 600; display: flex; align-items: center;">
+        <span style="background: #28a745; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 10px;">💬</span>
+        Mensaje
+      </h3>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 3px solid #28a745; font-style: italic; color: #2c3e50; white-space: pre-wrap;">{{message}}</div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <a href="mailto:{{from_email}}?subject=Re: Tu consulta desde Origami&body=Hola {{from_name}},%0D%0A%0D%0AGracias por contactarnos. Te respondemos a tu consulta:%0D%0A%0D%0A{{message}}%0D%0A%0D%0ASaludos,%0D%0AEquipo Origami" 
+         style="background: #667eea; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: 600; display: inline-block; margin: 0 10px; transition: all 0.3s ease;">
+        📧 Responder por Email
+      </a>
+      <a href="https://wa.me/541122692061?text=Hola, tengo una consulta sobre: {{message}}" 
+         style="background: #25d366; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: 600; display: inline-block; margin: 0 10px; transition: all 0.3s ease;">
+        📱 Responder por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background: #2c3e50; color: #ecf0f1; padding: 20px; text-align: center; font-size: 13px;">
+    <div style="margin-bottom: 15px;">
+      <strong style="color: #ffffff; font-size: 16px;">Origami</strong>
+      <p style="margin: 5px 0; color: #bdc3c7;">Tecnología de Vanguardia • Productos Originales • Precios Accesibles</p>
+    </div>
+    
+    <div style="border-top: 1px solid #34495e; padding-top: 15px; color: #95a5a6;">
+      <p style="margin: 0 0 8px 0;">
+        <strong>📞 Teléfono:</strong> 
+        <a href="tel:+541122692061" style="color: #ecf0f1; text-decoration: none;">+54 11 2269-2061</a>
+      </p>
+      <p style="margin: 0 0 8px 0;">
+        <strong>📧 Email:</strong> 
+        <a href="mailto:contacto@origami.com" style="color: #ecf0f1; text-decoration: none;">contacto@origami.com</a>
+      </p>
+      <p style="margin: 0;">
+        <strong>🌐 Web:</strong> 
+        <a href="https://tu-sitio.com" style="color: #ecf0f1; text-decoration: none;">www.origami.com</a>
+      </p>
+    </div>
+    
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #34495e; font-size: 11px; color: #7f8c8d;">
+      <p style="margin: 0;">Este mensaje fue enviado desde tu formulario de contacto web</p>
+      <p style="margin: 5px 0 0 0;">© 2024 Origami. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</div>
