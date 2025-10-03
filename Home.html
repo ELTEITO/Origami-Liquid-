@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Origami</title>
-  <link rel="stylesheet" href="Liquid1.css">
-<link rel="stylesheet" href="Footer/footer.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="js/navbar-auth.js"></script>
-</head>
-<body>
-<div id="navbar-placeholder"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Origami</title>
+    <link rel="stylesheet" href="Home.css" />
+    <link rel="stylesheet" href="Footer/footer.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="js/navbar-auth.js"></script>
+  </head>
+  <body>
+    <div id="navbar-placeholder"></div>
 
-<script src="js/navbar-loader.js"></script>
-  <main>
-    <!--
+    <script src="js/navbar-loader.js"></script>
+    <main>
+      <!--
     <section id="player" style="padding: 0; background: none; border: none; box-shadow: none; backdrop-filter: none;">
         <div class="music-player">
             <div class="music-player__album-art">
@@ -33,45 +36,94 @@
     </section>
     -->
 
-    <section id="home-iphone" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-start; justify-content:center; overflow-x:visible;">
-    <h2 style="flex-basis:100%; margin:0 0 1rem 0;">Ultimos IPhone</h2>
-    <!-- Solo productos Apple desde backend -->
-  </section>
+      <section
+        id="home-iphone"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          align-items: flex-start;
+          justify-content: center;
+          overflow-x: visible;
+        "
+      >
+        <h2 style="flex-basis: 100%; margin: 0 0 1rem 0">Últimos IPhone</h2>
+        <!-- Solo productos Apple desde backend -->
+      </section>
 
-    <section id="home-products" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-start; justify-content:center; overflow-x:visible;">
-    <h2 style="flex-basis:100%; margin:0 0 1rem 0;">Últimos Productos</h2>
-    <!-- Productos desde backend -->
-  </section>
-    <section id="info">
+      <section
+        id="home-products"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          align-items: flex-start;
+          justify-content: center;
+          overflow-x: visible;
+        "
+      >
+        <h2 style="flex-basis: 100%; margin: 0 0 1rem 0">Nuestros Equipos</h2>
+        <!-- Productos desde backend -->
+      </section>
+      <section id="info">
         <h2>SOMOS ORIGAMI</h2>
-        <p style="font-size: 1.2rem; color: var(--text-muted-color); text-align: center;">Somos un emprendimiento enfocado en la importación y venta de productos tecnológicos, 
-            insumos electrónicos y dispositivos móviles. 
-            Ofrecemos atención personalizada, productos originales y precios accesibles.</p> </section>
-  </main>
+        <p
+          style="
+            font-size: 1.2rem;
+            color: var(--text-muted-color);
+            text-align: center;
+          "
+        >
+          Somos un emprendimiento enfocado en la importación y venta de
+          productos tecnológicos, insumos electrónicos y dispositivos móviles.
+          Ofrecemos atención personalizada, productos originales y precios
+          accesibles.
+        </p>
+      </section>
+    </main>
 
-  <!-- Modal del carrito -->
-  <div id="cartModal" class="cart-modal" aria-hidden="true" role="dialog" aria-label="Carrito">
-    <div class="cart-modal__overlay" data-cart-close></div>
-    <div class="cart-modal__panel glass-effect">
-      <header class="cart-modal__header">
-        <h3>Tu carrito</h3>
-        <button class="cart-modal__close" type="button" aria-label="Cerrar" data-cart-close>×</button>
-      </header>
-      <br><br><br><br>
-      <div id="cartList" class="cart-modal__list"></div>
-      <footer class="cart-modal__footer">
-        <div class="cart-modal__total">
-          <span>Total:</span>
-          <strong id="cartTotal">$0</strong>
-        </div>
-        <div class="cart-modal__actions">
-          <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">Cotizar</button>
-        </div>
-      </footer>
+    <!-- Modal del carrito -->
+    <div
+      id="cartModal"
+      class="cart-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-label="Carrito"
+    >
+      <div class="cart-modal__overlay" data-cart-close></div>
+      <div class="cart-modal__panel glass-effect">
+        <header class="cart-modal__header">
+          <h3>Tu carrito</h3>
+          <button
+            class="cart-modal__close"
+            type="button"
+            aria-label="Cerrar"
+            data-cart-close
+          >
+            ×
+          </button>
+        </header>
+        <br /><br /><br /><br />
+        <div id="cartList" class="cart-modal__list"></div>
+        <footer class="cart-modal__footer">
+          <div class="cart-modal__total">
+            <span>Total:</span>
+            <strong id="cartTotal">$0</strong>
+          </div>
+          <div class="cart-modal__actions">
+            <button
+              id="sendWhatsAppBtn"
+              class="publi-btn primary"
+              type="button"
+            >
+              Cotizar
+            </button>
+          </div>
+        </footer>
+      </div>
     </div>
-  </div>
 
-  <!-- <div id="nav" class="bottom-nav">
+    <!-- <div id="nav" class="bottom-nav">
       <a href="#" class="bottom-nav__item active">
           <i class="fa-solid fa-house"></i>
           <span>Home</span>
@@ -93,10 +145,10 @@
       </a>
   </div>
 -->
-  <script src="js/store-integration.js"></script>
-  <script src="js/home-products.js"></script> 
-  <script src="js/cart.js"></script>
-  <!--<script>
+    <script src="js/store-integration.js"></script>
+    <script src="js/home-products.js"></script>
+    <script src="js/cart.js"></script>
+    <!--<script>
     // Botón flotante para volver al panel si el admin está autenticado
     (async function addReturnToAdminIfAuthenticated() {
       try {
@@ -134,7 +186,7 @@
       }
     })();
   </script>-->
-  <div id="footer-placeholder"></div>
-  <script src="js/footer-loader.js"></script>
-</body>
+    <div id="footer-placeholder"></div>
+    <script src="js/footer-loader.js"></script>
+  </body>
 </html>

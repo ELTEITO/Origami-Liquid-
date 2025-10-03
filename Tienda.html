@@ -1,96 +1,118 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tienda | Origami</title>
-  <link rel="stylesheet" href="Liquid1.css">
-  <link rel="stylesheet" href="Footer/footer.css">
-  <link rel="stylesheet" href="tienda.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="js/navbar-auth.js"></script>
-</head>
-<body>
-  <div id="navbar-placeholder"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tienda | Origami</title>
+    <link rel="stylesheet" href="Home.css" />
+    <link rel="stylesheet" href="Footer/footer.css" />
+    <link rel="stylesheet" href="tienda.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="js/navbar-auth.js"></script>
+  </head>
+  <body>
+    <div id="navbar-placeholder"></div>
 
-  <main class="store wrap">
-    <!-- Sidebar izquierda -->
-    <aside class="filters glass-effect">
-      <h3>Busqueda</h3>
+    <main class="store wrap">
+      <!-- Sidebar izquierda -->
+      <aside class="filters glass-effect">
+        <h3>Busqueda</h3>
 
-      <label class="block">
-        <span>Buscar modelo</span>
-        <input id="fSearch" type="search" placeholder="Ej: 17, S25, Edge">
-      </label>
+        <label class="block">
+          <span>Buscar modelo</span>
+          <input id="fSearch" type="search" placeholder="Ej: 17, S25, Edge" />
+        </label>
 
- <!-- Capacidad -->
-<div class="dropdown" id="capDD">
-  <div class="dropdown-btn">Todas <span>▾</span></div>
-  <div class="dropdown-list">
-    <div class="dropdown-item" data-val="">Todas</div>
-    <div class="dropdown-item" data-val="128GB">128GB</div>
-    <div class="dropdown-item" data-val="256GB">256GB</div>
-    <div class="dropdown-item" data-val="512GB">512GB</div>
-  </div>
-</div>
-
-<!-- Marca -->
-<div class="dropdown" id="brandDD">
-  <div class="dropdown-btn">Marca <span>▾</span></div>
-  <div class="dropdown-list">
-    <div class="dropdown-item" data-val="">Todas</div>
-    <div class="dropdown-item" data-val="motorola">Motorola</div>
-    <div class="dropdown-item" data-val="samsung">Samsung</div>
-    <div class="dropdown-item" data-val="iphone">iPhone</div>
-    <div class="dropdown-item" data-val="xiaomi">Xiaomi</div>
-  </div>
-</div>
-
-<div class="quickcats">
-  <button class="chip is-active" data-type="">Todos</button>
-  <button class="chip" data-type="celulares">Celulares</button>
-  <button class="chip" data-type="accesorios">Accesorios</button>
-  <button class="chip" data-type="notebooks">Notebooks</button>
-  <button class="chip" data-type="productos">Productos</button>
-</div>
-    </aside>
-
-    <!-- Contenido -->
-    <section class="store-content">
-      <h2 class="title"></h2>
-
-      <div id="grid" class="grid"></div>
-
-      <!-- paginación -->
-      <nav id="pager" class="pager"></nav>
-    </section>
-  </main>
-
-  <!-- Modal del carrito -->
-  <div id="cartModal" class="cart-modal" aria-hidden="true" role="dialog" aria-label="Carrito">
-    <div class="cart-modal__overlay" data-cart-close></div>
-    <div class="cart-modal__panel glass-effect">
-      <header class="cart-modal__header">
-        <h3>Tu carrito</h3>
-        <button class="cart-modal__close" type="button" aria-label="Cerrar" data-cart-close>×</button>
-      </header>
-      <br><br><br><br>
-      <div id="cartList" class="cart-modal__list"></div>
-      <footer class="cart-modal__footer">
-        <div class="cart-modal__total">
-          <span>Total:</span>
-          <strong id="cartTotal">$0</strong>
+        <!-- Capacidad -->
+        <div class="dropdown" id="capDD">
+          <div class="dropdown-btn">Todas <span>▾</span></div>
+          <div class="dropdown-list">
+            <div class="dropdown-item" data-val="">Todas</div>
+            <div class="dropdown-item" data-val="128GB">128GB</div>
+            <div class="dropdown-item" data-val="256GB">256GB</div>
+            <div class="dropdown-item" data-val="512GB">512GB</div>
+          </div>
         </div>
-        <div class="cart-modal__actions">
-          <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">Cotizar</button>
+
+        <!-- Marca -->
+        <div class="dropdown" id="brandDD">
+          <div class="dropdown-btn">Marca <span>▾</span></div>
+          <div class="dropdown-list">
+            <div class="dropdown-item" data-val="">Todas</div>
+            <div class="dropdown-item" data-val="motorola">Motorola</div>
+            <div class="dropdown-item" data-val="samsung">Samsung</div>
+            <div class="dropdown-item" data-val="iphone">iPhone</div>
+            <div class="dropdown-item" data-val="xiaomi">Xiaomi</div>
+          </div>
         </div>
-      </footer>
+
+        <div class="quickcats">
+          <button class="chip is-active" data-type="">Todos</button>
+          <button class="chip" data-type="celulares">Celulares</button>
+          <button class="chip" data-type="accesorios">Accesorios</button>
+          <button class="chip" data-type="notebooks">Notebooks</button>
+          <button class="chip" data-type="productos">Productos</button>
+        </div>
+      </aside>
+
+      <!-- Contenido -->
+      <section class="store-content">
+        <h2 class="title"></h2>
+
+        <div id="grid" class="grid"></div>
+
+        <!-- paginación -->
+        <nav id="pager" class="pager"></nav>
+      </section>
+    </main>
+
+    <!-- Modal del carrito -->
+    <div
+      id="cartModal"
+      class="cart-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-label="Carrito"
+    >
+      <div class="cart-modal__overlay" data-cart-close></div>
+      <div class="cart-modal__panel glass-effect">
+        <header class="cart-modal__header">
+          <h3>Tu carrito</h3>
+          <button
+            class="cart-modal__close"
+            type="button"
+            aria-label="Cerrar"
+            data-cart-close
+          >
+            ×
+          </button>
+        </header>
+        <br /><br /><br /><br />
+        <div id="cartList" class="cart-modal__list"></div>
+        <footer class="cart-modal__footer">
+          <div class="cart-modal__total">
+            <span>Total:</span>
+            <strong id="cartTotal">$0</strong>
+          </div>
+          <div class="cart-modal__actions">
+            <button
+              id="sendWhatsAppBtn"
+              class="publi-btn primary"
+              type="button"
+            >
+              Cotizar
+            </button>
+          </div>
+        </footer>
+      </div>
     </div>
-  </div>
 
-  <div id="footer-placeholder"></div>
-  <script src="js/store-integration.js"></script>
-  <script src="js/cart.js"></script>
-  <script src="js/tienda-filters.js"></script>
-</body>
+    <div id="footer-placeholder"></div>
+    <script src="js/store-integration.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/tienda-filters.js"></script>
+  </body>
 </html>

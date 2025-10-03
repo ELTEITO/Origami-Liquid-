@@ -539,7 +539,7 @@ try
     // Mapear archivos específicos del frontend
     app.MapGet("/", async context =>
     {
-        context.Response.Redirect("/Liquid1.html");
+        context.Response.Redirect("/Home.html");
     });
 
     app.MapGet("/admin", async context =>

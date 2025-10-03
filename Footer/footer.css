@@ -106,6 +106,13 @@ img {
 a {
   text-decoration: none;
   color: inherit;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.col2 a:hover,
+.col3 a:hover {
+  color: var(--active-text-color, #fff);
+  opacity: 0.8;
 }
 
 .link {

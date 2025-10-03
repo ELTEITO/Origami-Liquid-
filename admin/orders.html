@@ -1,62 +1,155 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedidos - Origami Admin</title>
-  <link rel="stylesheet" href="../Liquid1.css">
-  <link rel="stylesheet" href="css/admin.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-  <div class="admin-layout">
-    <!-- Sidebar (componente) -->
-    <div id="sidebar-placeholder"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pedidos - Origami Admin</title>
+    <link rel="stylesheet" href="../Home.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <!-- Sidebar (componente) -->
+      <div id="sidebar-placeholder"></div>
 
-    <!-- Main Content -->
-    <main class="admin-main">
-      <div class="page-header">
-        <h1 class="page-title">Gestión de Pedidos</h1>
-        <div class="header-actions">
-          <button class="btn btn-secondary" onclick="refreshOrders()">
-            <i class="fa-solid fa-refresh"></i> Actualizar
+      <!-- Main Content -->
+      <main class="admin-main">
+        <div class="page-header">
+          <h1 class="page-title">Gestión de Pedidos</h1>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="refreshOrders()">
+              <i class="fa-solid fa-refresh"></i> Actualizar
+            </button>
+            <button class="btn btn-primary" onclick="createSampleOrder()">
+              <i class="fa-solid fa-plus"></i> Crear Pedido de Prueba
+            </button>
+          </div>
+        </div>
+
+        <!-- Order Statistics -->
+        <div class="stats-grid order-stats">
+          <div class="stat-card glass-effect">
+            <div class="stat-value" id="totalOrders">0</div>
+            <div class="stat-label">Total Pedidos</div>
+          </div>
+          <div class="stat-card glass-effect">
+            <div class="stat-value" id="pendingOrders">0</div>
+            <div class="stat-label">Pendientes</div>
+          </div>
+          <div class="stat-card glass-effect">
+            <div class="stat-value" id="completedOrders">0</div>
+            <div class="stat-label">Completados</div>
+          </div>
+          <div class="stat-card glass-effect">
+            <div class="stat-value" id="totalRevenue">$0</div>
+            <div class="stat-label">Ingresos Totales</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3 class="card-title">Filtros</h3>
+          </div>
+          <div class="filters-row">
+            <div class="form-field">
+              <label>Estado</label>
+              <select id="statusFilter">
+                <option value="">Todos los estados</option>
+                <option value="pending">Pendiente</option>
+                <option value="processing">Procesando</option>
+                <option value="shipped">Enviado</option>
+                <option value="delivered">Entregado</option>
+                <option value="cancelled">Cancelado</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Buscar</label>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar por ID, cliente o email..."
+              />
+            </div>
+            <div class="form-field">
+              <label>Fecha</label>
+              <input type="date" id="dateFilter" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3 class="card-title">Lista de Pedidos</h3>
+            <div class="table-info">
+              <span id="orderCount">0 pedidos</span>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="admin-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>ID Pedido</th>
+                  <th>Cliente</th>
+                  <th>Productos</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- Orders will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination" id="pagination">
+            <!-- Pagination will be populated by JavaScript -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderModal">
+      <div class="modal-content large-modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Detalles del Pedido</h3>
+          <button class="modal-close" onclick="closeOrderModal()">
+            <i class="fa-solid fa-times"></i>
           </button>
-          <button class="btn btn-primary" onclick="createSampleOrder()">
-            <i class="fa-solid fa-plus"></i> Crear Pedido de Prueba
-          </button>
+        </div>
+
+        <div class="order-details" id="orderDetails">
+          <!-- Order details will be populated by JavaScript -->
         </div>
       </div>
+    </div>
 
-      <!-- Order Statistics -->
-      <div class="stats-grid order-stats">
-        <div class="stat-card glass-effect">
-          <div class="stat-value" id="totalOrders">0</div>
-          <div class="stat-label">Total Pedidos</div>
+    <!-- Status Update Modal -->
+    <div class="modal" id="statusModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Actualizar Estado</h3>
+          <button class="modal-close" onclick="closeStatusModal()">
+            <i class="fa-solid fa-times"></i>
+          </button>
         </div>
-        <div class="stat-card glass-effect">
-          <div class="stat-value" id="pendingOrders">0</div>
-          <div class="stat-label">Pendientes</div>
-        </div>
-        <div class="stat-card glass-effect">
-          <div class="stat-value" id="completedOrders">0</div>
-          <div class="stat-label">Completados</div>
-        </div>
-        <div class="stat-card glass-effect">
-          <div class="stat-value" id="totalRevenue">$0</div>
-          <div class="stat-label">Ingresos Totales</div>
-        </div>
-      </div>
 
-      <!-- Filters -->
-      <div class="admin-card">
-        <div class="card-header">
-          <h3 class="card-title">Filtros</h3>
-        </div>
-        <div class="filters-row">
+        <form id="statusForm" class="admin-form">
+          <input type="hidden" id="statusOrderId" />
+
           <div class="form-field">
-            <label>Estado</label>
-            <select id="statusFilter">
-              <option value="">Todos los estados</option>
+            <label for="newStatus">Nuevo Estado</label>
+            <select id="newStatus" name="status" required>
               <option value="pending">Pendiente</option>
               <option value="processing">Procesando</option>
               <option value="shipped">Enviado</option>
@@ -64,141 +157,66 @@
               <option value="cancelled">Cancelado</option>
             </select>
           </div>
+
           <div class="form-field">
-            <label>Buscar</label>
-            <input type="text" id="searchInput" placeholder="Buscar por ID, cliente o email...">
+            <label for="statusNotes">Notas (opcional)</label>
+            <textarea
+              id="statusNotes"
+              name="notes"
+              rows="3"
+              placeholder="Agregar notas sobre el cambio de estado..."
+            ></textarea>
           </div>
-          <div class="form-field">
-            <label>Fecha</label>
-            <input type="date" id="dateFilter">
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeStatusModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-save"></i> Actualizar Estado
+            </button>
           </div>
-        </div>
-      </div>
-
-      <!-- Orders Table -->
-      <div class="admin-card">
-        <div class="card-header">
-          <h3 class="card-title">Lista de Pedidos</h3>
-          <div class="table-info">
-            <span id="orderCount">0 pedidos</span>
-          </div>
-        </div>
-
-        <div class="table-container">
-          <table class="admin-table" id="ordersTable">
-            <thead>
-              <tr>
-                <th>ID Pedido</th>
-                <th>Cliente</th>
-                <th>Productos</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-              <!-- Orders will be populated by JavaScript -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination" id="pagination">
-          <!-- Pagination will be populated by JavaScript -->
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Order Details Modal -->
-  <div class="modal" id="orderModal">
-    <div class="modal-content large-modal">
-      <div class="modal-header">
-        <h3 id="modalTitle">Detalles del Pedido</h3>
-        <button class="modal-close" onclick="closeOrderModal()">
-          <i class="fa-solid fa-times"></i>
-        </button>
-      </div>
-
-      <div class="order-details" id="orderDetails">
-        <!-- Order details will be populated by JavaScript -->
+        </form>
       </div>
     </div>
-  </div>
 
-  <!-- Status Update Modal -->
-  <div class="modal" id="statusModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Actualizar Estado</h3>
-        <button class="modal-close" onclick="closeStatusModal()">
-          <i class="fa-solid fa-times"></i>
-        </button>
-      </div>
+    <!-- Scripts -->
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-      <form id="statusForm" class="admin-form">
-        <input type="hidden" id="statusOrderId">
+    <!-- API Configuration & Service -->
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
 
-        <div class="form-field">
-          <label for="newStatus">Nuevo Estado</label>
-          <select id="newStatus" name="status" required>
-            <option value="pending">Pendiente</option>
-            <option value="processing">Procesando</option>
-            <option value="shipped">Enviado</option>
-            <option value="delivered">Entregado</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
-        </div>
+    <script src="js/sidebar.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/orders.js"></script>
 
-        <div class="form-field">
-          <label for="statusNotes">Notas (opcional)</label>
-          <textarea id="statusNotes" name="notes" rows="3" placeholder="Agregar notas sobre el cambio de estado..."></textarea>
-        </div>
+    <script>
+      // Background rotation
+      const backgroundImages = [
+        "https://assets.codepen.io/252820/unsplash-mountain3.webp",
+      ];
 
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeStatusModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-save"></i> Actualizar Estado
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+      let currentImageIndex = 0;
+      const body = document.body;
 
-  <!-- Scripts -->
-  <!-- Axios CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      function changeBackground() {
+        const nextImage = new Image();
+        const nextImageIndex =
+          (currentImageIndex + 1) % backgroundImages.length;
+        nextImage.src = backgroundImages[nextImageIndex];
 
-  <!-- API Configuration & Service -->
-  <script src="js/config.js"></script>
-  <script src="js/api-service.js"></script>
+        body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+        currentImageIndex = nextImageIndex;
+      }
 
-  <script src="js/sidebar.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/orders.js"></script>
-
-  <script>
-    // Background rotation
-    const backgroundImages = [
-      'https://assets.codepen.io/252820/unsplash-mountain3.webp',
-    ];
-
-    let currentImageIndex = 0;
-    const body = document.body;
-
-    function changeBackground() {
-      const nextImage = new Image();
-      const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-      nextImage.src = backgroundImages[nextImageIndex];
-
-      body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
-      currentImageIndex = nextImageIndex;
-    }
-
-    changeBackground();
-    
-  </script>
-</body>
+      changeBackground();
+    </script>
+  </body>
 </html>

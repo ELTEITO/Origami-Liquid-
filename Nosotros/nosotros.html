@@ -1,141 +1,232 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nosotros</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nosotros</title>
 
-  <link rel="stylesheet" href="/Liquid1.css" />
-  <link rel="stylesheet" href="nosotros.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/Footer/footer.css">
-  <script src="/js/navbar-auth.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="/js/emailjs-config.js"></script>
-</head>
-<body data-bg="assets/bg/home-01.jpg"><!-- usa tu ruta real -->
-<div id="navbar-placeholder"></div>
-  <main class="page">
-    <section id="equipo" class="glass card-section">
-      <h2>Nuestros Dueños</h2>
-      <div class="team">
-        <article class="member">
-          <a class="member__link" href="https://instagram.com/usuario1" target="_blank" rel="noopener" aria-label="Perfil de Usuario 1">
-            <div class="avatar">
-              <img src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400" alt="Usuario 1" loading="lazy">
-            </div>
-          </a>
-          <p class="role">CEO</p>
-          <h3 class="name">Thiago Brizuela</h3>
-        </article>
-
-        <article class="member">
-          <a class="member__link" href="https://instagram.com/usuario2" target="_blank" rel="noopener" aria-label="Perfil de Usuario 2">
-            <div class="avatar">
-              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400" alt="Usuario 2" loading="lazy">
-            </div>
-          </a>
-          <p class="role">CEO</p>
-          <h3 class="name">Santiago Heredia</h3>
-        </article>
-
-        <article class="member">
-          <a class="member__link" href="https://instagram.com/usuario3" target="_blank" rel="noopener" aria-label="Perfil de Usuario 3">
-            <div class="avatar">
-              <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=400" alt="Usuario 3" loading="lazy">
-            </div>
-          </a>
-          <p class="role">CEO</p>
-          <h3 class="name">Ivan Oishi</h3>
-        </article>
-      </div>
-    </section>
-
-    <section id="info">
-        <h2>SOMOS ORIGAMI</h2>
-        <p style="font-size: 1.2rem; color: var(--text-muted-color); text-align: center;">Somos un emprendimiento enfocado en la importación y venta de productos tecnológicos, 
-            insumos electrónicos y dispositivos móviles. 
-            Ofrecemos atención personalizada, productos originales y precios accesibles.</p> </section>
-
-    <section id="contacto" class="glass card-section">
-      <h2>Contacto</h2>
-      <div class="contact-grid">
-        <article class="contact-card">
-          <div class="icon"><i class="fa-brands fa-whatsapp"></i></div>
-          <h3>WhatsApp</h3>
-          <p>Consultas y pedidos por WhatsApp.</p>
-          <a class="btn" href="https://wa.me/541122692061?text=Hola%2C%20quisiera%20hacer%20una%20consulta" target="_blank" rel="noopener">
-            Abrir WhatsApp
-          </a>
-        </article>
-
-        <article class="contact-card">
-          <div class="icon"><i class="fa-solid fa-envelope"></i></div>
-          <h3>Email</h3>
-          <form id="contact-form" class="email-form">
-            <label>
-              <span>Tu nombre</span>
-              <input type="text" name="from_name" id="from_name" required placeholder="Tu nombre completo">
-            </label>
-            <label>
-              <span>Tu email</span>
-              <input type="email" name="from_email" id="from_email" required placeholder="tu@email.com">
-            </label>
-            <label>
-              <span>Mensaje</span>
-              <textarea name="message" id="message" rows="3" required placeholder="Contanos qué necesitás"></textarea>
-            </label>
-            <button type="submit" class="btn" id="submit-btn">
-              <span id="btn-text">Enviar</span>
-              <span id="btn-loading" style="display: none;">
-                <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
-              </span>
-            </button>
-            <div id="form-message" class="form-alert" style="display: none;">
-              <div class="alert-content">
-                <i class="alert-icon"></i>
-                <span class="alert-text"></span>
+    <link rel="stylesheet" href="/Home.css" />
+    <link rel="stylesheet" href="nosotros.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/Footer/footer.css" />
+    <script src="/js/navbar-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="/js/emailjs-config.js"></script>
+  </head>
+  <body data-bg="assets/bg/home-01.jpg">
+    <!-- usa tu ruta real -->
+    <div id="navbar-placeholder"></div>
+    <main class="page">
+      <section id="equipo" class="glass card-section">
+        <h2>Nuestros Dueños</h2>
+        <div class="team">
+          <article class="member">
+            <a
+              class="member__link"
+              href="https://instagram.com/usuario1"
+              target="_blank"
+              rel="noopener"
+              aria-label="Perfil de Usuario 1"
+            >
+              <div class="avatar">
+                <img
+                  src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400"
+                  alt="Usuario 1"
+                  loading="lazy"
+                />
               </div>
-            </div>
-          </form>
-        </article>
+            </a>
+            <p class="role">CEO</p>
+            <h3 class="name">Thiago Brizuela</h3>
+          </article>
 
-        <article class="contact-card">
-          <div class="icon"><i class="fa-brands fa-instagram"></i></div>
-          <h3>Instagram</h3>
-          <p>Seguinos para ver novedades y promos.</p>
-          <a class="btn" href="https://instagram.com/origami.importados" target="_blank" rel="noopener">
-            Visitar Instagram
-          </a>
-        </article>
+          <article class="member">
+            <a
+              class="member__link"
+              href="https://instagram.com/usuario2"
+              target="_blank"
+              rel="noopener"
+              aria-label="Perfil de Usuario 2"
+            >
+              <div class="avatar">
+                <img
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400"
+                  alt="Usuario 2"
+                  loading="lazy"
+                />
+              </div>
+            </a>
+            <p class="role">CEO</p>
+            <h3 class="name">Santiago Heredia</h3>
+          </article>
+
+          <article class="member">
+            <a
+              class="member__link"
+              href="https://instagram.com/usuario3"
+              target="_blank"
+              rel="noopener"
+              aria-label="Perfil de Usuario 3"
+            >
+              <div class="avatar">
+                <img
+                  src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=400"
+                  alt="Usuario 3"
+                  loading="lazy"
+                />
+              </div>
+            </a>
+            <p class="role">CEO</p>
+            <h3 class="name">Ivan Oishi</h3>
+          </article>
+        </div>
+      </section>
+
+      <section id="info">
+        <h2>SOMOS ORIGAMI</h2>
+        <p
+          style="
+            font-size: 1.2rem;
+            color: var(--text-muted-color);
+            text-align: center;
+          "
+        >
+          Somos un emprendimiento enfocado en la importación y venta de
+          productos tecnológicos, insumos electrónicos y dispositivos móviles.
+          Ofrecemos atención personalizada, productos originales y precios
+          accesibles.
+        </p>
+      </section>
+
+      <section id="contacto" class="glass card-section">
+        <h2>Contacto</h2>
+        <div class="contact-grid">
+          <article class="contact-card">
+            <div class="icon"><i class="fa-brands fa-whatsapp"></i></div>
+            <h3>WhatsApp</h3>
+            <p>Consultas y pedidos por WhatsApp.</p>
+            <a
+              class="btn"
+              href="https://wa.me/541122692061?text=Hola%2C%20quisiera%20hacer%20una%20consulta"
+              target="_blank"
+              rel="noopener"
+            >
+              Abrir WhatsApp
+            </a>
+          </article>
+
+          <article class="contact-card">
+            <div class="icon"><i class="fa-solid fa-envelope"></i></div>
+            <h3>Email</h3>
+            <form id="contact-form" class="email-form">
+              <label>
+                <span>Tu nombre</span>
+                <input
+                  type="text"
+                  name="from_name"
+                  id="from_name"
+                  required
+                  placeholder="Tu nombre completo"
+                />
+              </label>
+              <label>
+                <span>Tu email</span>
+                <input
+                  type="email"
+                  name="from_email"
+                  id="from_email"
+                  required
+                  placeholder="tu@email.com"
+                />
+              </label>
+              <label>
+                <span>Mensaje</span>
+                <textarea
+                  name="message"
+                  id="message"
+                  rows="3"
+                  required
+                  placeholder="Contanos qué necesitás"
+                ></textarea>
+              </label>
+              <button type="submit" class="btn" id="submit-btn">
+                <span id="btn-text">Enviar</span>
+                <span id="btn-loading" style="display: none">
+                  <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
+                </span>
+              </button>
+              <div id="form-message" class="form-alert" style="display: none">
+                <div class="alert-content">
+                  <i class="alert-icon"></i>
+                  <span class="alert-text"></span>
+                </div>
+              </div>
+            </form>
+          </article>
+
+          <article class="contact-card">
+            <div class="icon"><i class="fa-brands fa-instagram"></i></div>
+            <h3>Instagram</h3>
+            <p>Seguinos para ver novedades y promos.</p>
+            <a
+              class="btn"
+              href="https://instagram.com/origami.importados"
+              target="_blank"
+              rel="noopener"
+            >
+              Visitar Instagram
+            </a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal del carrito -->
+    <div
+      id="cartModal"
+      class="cart-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-label="Carrito"
+    >
+      <div class="cart-modal__overlay" data-cart-close></div>
+      <div class="cart-modal__panel glass-effect">
+        <header class="cart-modal__header">
+          <h3>Tu carrito</h3>
+          <button
+            class="cart-modal__close"
+            type="button"
+            aria-label="Cerrar"
+            data-cart-close
+          >
+            ×
+          </button>
+        </header>
+        <br /><br /><br /><br />
+        <div id="cartList" class="cart-modal__list"></div>
+        <footer class="cart-modal__footer">
+          <div class="cart-modal__total">
+            <span>Total:</span>
+            <strong id="cartTotal">$0</strong>
+          </div>
+          <div class="cart-modal__actions">
+            <button
+              id="sendWhatsAppBtn"
+              class="publi-btn primary"
+              type="button"
+            >
+              Cotizar
+            </button>
+          </div>
+        </footer>
       </div>
-    </section>
-  </main>
-  
-  <!-- Modal del carrito -->
-  <div id="cartModal" class="cart-modal" aria-hidden="true" role="dialog" aria-label="Carrito">
-    <div class="cart-modal__overlay" data-cart-close></div>
-    <div class="cart-modal__panel glass-effect">
-      <header class="cart-modal__header">
-        <h3>Tu carrito</h3>
-        <button class="cart-modal__close" type="button" aria-label="Cerrar" data-cart-close>×</button>
-      </header>
-      <br><br><br><br>
-      <div id="cartList" class="cart-modal__list"></div>
-      <footer class="cart-modal__footer">
-        <div class="cart-modal__total">
-          <span>Total:</span>
-          <strong id="cartTotal">$0</strong>
-        </div>
-        <div class="cart-modal__actions">
-          <button id="sendWhatsAppBtn" class="publi-btn primary" type="button">Cotizar</button>
-        </div>
-      </footer>
     </div>
-  </div>
 
-  <div id="footer-placeholder"></div>
-  <script src="/js/cart.js"></script>
-  <script src="js/contacto.js"></script>
-</body>
+    <div id="footer-placeholder"></div>
+    <script src="/js/cart.js"></script>
+    <script src="js/contacto.js"></script>
+  </body>
 </html>

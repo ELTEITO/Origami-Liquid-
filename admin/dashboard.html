@@ -1,42 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Origami Admin</title>
-  <link rel="stylesheet" href="../Liquid1.css">
-  <link rel="stylesheet" href="css/admin.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-  <div class="admin-layout">
-    <!-- Sidebar (componente) -->
-    <div id="sidebar-placeholder"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Origami Admin</title>
+    <link rel="stylesheet" href="../Home.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <!-- Sidebar (componente) -->
+      <div id="sidebar-placeholder"></div>
 
-    <!-- Main Content -->
-    <main class="admin-main">
-      <div class="page-header">
-        <h1 class="page-title">Dashboard</h1>
-        <div class="header-actions">
-          <a class="btn btn-secondary" href="/Liquid1.html">
-            <i class="fa-solid fa-house"></i> Ver Home
-          </a>
-          <button class="btn btn-secondary" onclick="refreshData()">
-            <i class="fa-solid fa-refresh"></i> Actualizar
-          </button>
-          <button class="btn btn-primary" onclick="exportData()">
-            <i class="fa-solid fa-download"></i> Exportar Datos
-          </button>
+      <!-- Main Content -->
+      <main class="admin-main">
+        <div class="page-header">
+          <h1 class="page-title">Dashboard</h1>
+          <div class="header-actions">
+            <a class="btn btn-secondary" href="/Home.html">
+              <i class="fa-solid fa-house"></i> Ver Home
+            </a>
+            <button class="btn btn-secondary" onclick="refreshData()">
+              <i class="fa-solid fa-refresh"></i> Actualizar
+            </button>
+            <button class="btn btn-primary" onclick="exportData()">
+              <i class="fa-solid fa-download"></i> Exportar Datos
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Statistics Cards -->
-      <div class="stats-grid" id="statsGrid">
-        <!-- Stats will be populated by JavaScript -->
-      </div>
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="statsGrid">
+          <!-- Stats will be populated by JavaScript -->
+        </div>
 
-      <!-- Charts and Analytics -->
-      <!-- <div class="admin-card">
+        <!-- Charts and Analytics -->
+        <!-- <div class="admin-card">
         <div class="card-header">
           <h3 class="card-title">Análisis de Ventas</h3>
         </div>
@@ -45,17 +48,17 @@
         </div>
       </div> -->
 
-      <!-- Recent Activity -->
-      <div class="admin-card">
-        <div class="card-header">
-          <h3 class="card-title">Actividad Reciente</h3>
+        <!-- Recent Activity -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3 class="card-title">Actividad Reciente</h3>
+          </div>
+          <div id="recentActivity">
+            <!-- Activity will be populated by JavaScript -->
+          </div>
         </div>
-        <div id="recentActivity">
-          <!-- Activity will be populated by JavaScript -->
-        </div>
-      </div>
 
-      <!-- Top Products 
+        <!-- Top Products 
       <div class="admin-card">
         <div class="card-header">
           <h3 class="card-title">Top Categorías</h3>
@@ -65,7 +68,7 @@
         </div>
       </div>-->
 
-      <!-- System Info
+        <!-- System Info
       <div class="admin-card">
         <div class="card-header">
           <h3 class="card-title">Información del Sistema</h3>
@@ -85,41 +88,42 @@
           </div>
         </div>
       </div> -->
-    </main>
-  </div>
+      </main>
+    </div>
 
-  <!-- Scripts -->
-  <!-- Axios CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Scripts -->
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-  <!-- API Configuration & Service -->
-  <script src="js/config.js"></script>
-  <script src="js/api-service.js"></script>
+    <!-- API Configuration & Service -->
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
 
-  <script src="js/sidebar.js?v=1"></script>
-  <script src="js/auth.js?v=1"></script>
-  <script src="js/storage.js?v=1"></script>
-  <script src="js/dashboard.js?v=2"></script>
+    <script src="js/sidebar.js?v=1"></script>
+    <script src="js/auth.js?v=1"></script>
+    <script src="js/storage.js?v=1"></script>
+    <script src="js/dashboard.js?v=2"></script>
 
-  <script>
-    // Background rotation
-    const backgroundImages = [
-      'https://assets.codepen.io/252820/unsplash-mountain3.webp',
-    ];
+    <script>
+      // Background rotation
+      const backgroundImages = [
+        "https://assets.codepen.io/252820/unsplash-mountain3.webp",
+      ];
 
-    let currentImageIndex = 0;
-    const body = document.body;
+      let currentImageIndex = 0;
+      const body = document.body;
 
-    function changeBackground() {
-      const nextImage = new Image();
-      const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-      nextImage.src = backgroundImages[nextImageIndex];
+      function changeBackground() {
+        const nextImage = new Image();
+        const nextImageIndex =
+          (currentImageIndex + 1) % backgroundImages.length;
+        nextImage.src = backgroundImages[nextImageIndex];
 
-      body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
-      currentImageIndex = nextImageIndex;
-    }
+        body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+        currentImageIndex = nextImageIndex;
+      }
 
-    changeBackground();
-  </script>
-</body>
+      changeBackground();
+    </script>
+  </body>
 </html>

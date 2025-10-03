@@ -1,25 +1,25 @@
 // Navbar loader - Carga el componente navbar dinámicamente
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   fetch("Navbar/navbar.html")
-    .then(res => {
+    .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       return res.text();
     })
-    .then(html => {
+    .then((html) => {
       document.getElementById("navbar-placeholder").innerHTML = html;
       // Ejecutar el script del navbar después de insertarlo
       setTimeout(async () => {
-        if (typeof initNavbarAuth === 'function') {
+        if (typeof initNavbarAuth === "function") {
           await initNavbarAuth();
         } else {
-          console.error('initNavbarAuth no está disponible');
+          console.error("initNavbarAuth no está disponible");
         }
       }, 100);
     })
-    .catch(error => {
-      console.error('Error loading navbar:', error);
+    .catch((error) => {
+      console.error("Error loading navbar:", error);
       // Fallback: Insertar navbar directamente
       loadNavbarDirectly();
     });
@@ -32,12 +32,17 @@ function loadNavbarDirectly() {
         <span class="logo-circle" aria-hidden="true"
           style="width:36px;height:36px;border-radius:50%;display:inline-block;background:url(img/CanvaLogoWeb.webp?=v) center/cover;overflow:hidden;">
         </span>
-        <a href="Liquid1.html" style="text-decoration:none;color:inherit;">Origami</a>
+        <a href="Home.html" style="text-decoration:none;color:inherit;">Origami</a>
       </h1>
 
       <nav class="nav-bar">
+        <a href="Home.html">Inicio</a>
         <a href="Tienda.html">Tienda</a>
-        <a href="Nosotros/nosotros.html">Nosotros</a>
+        <a href="Nosotros/nosotros.html">Contacto</a>
+        <a class="carrito" id="cartButton" aria-label="Carrito" href="javascript:void(0)">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="cartCount" class="cart-badge" aria-live="polite">0</span>
+        </a>
         <div class="nav-search">
           <input id="search" class="nav-search__input" type="search" placeholder="Buscar…" />
           <label for="search" class="nav-search__btn">
@@ -54,10 +59,10 @@ function loadNavbarDirectly() {
   document.getElementById("navbar-placeholder").innerHTML = navbarHTML;
   // También ejecutar la función de autenticación
   setTimeout(async () => {
-    if (typeof initNavbarAuth === 'function') {
+    if (typeof initNavbarAuth === "function") {
       await initNavbarAuth();
     } else {
-      console.error('initNavbarAuth no está disponible');
+      console.error("initNavbarAuth no está disponible");
     }
   }, 100);
 }

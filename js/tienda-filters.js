@@ -50,17 +50,6 @@ function wireDropdown(id, onSelect){
 wireDropdown('capDD',   v => capVal   = v);
 wireDropdown('brandDD', v => brandVal = v);
 
-// -------- chips ----------
-function ensureTypeDataset(){ all.forEach(el => { if(!el.dataset.type) el.dataset.type = 'celulares'; }); }
-document.querySelectorAll('.quickcats .chip').forEach(ch=>{
-  ch.addEventListener('click', ()=>{
-    document.querySelectorAll('.quickcats .chip').forEach(x=>x.classList.remove('is-active'));
-    ch.classList.add('is-active');
-    activeType = ch.dataset.type || '';
-    page = 1; render();
-  });
-});
-
 // -------- texto ----------
 q?.addEventListener('input', ()=>{
   qVal = q.value.trim().toLowerCase();
@@ -71,12 +60,12 @@ q?.addEventListener('input', ()=>{
 function applyFilters(){
   return all.filter(el=>{
     const model = (el.dataset.model    || '').toLowerCase();
-    const cap   = (el.dataset.capacity || '');
+    const caps  = (el.dataset.capacity || '').split(',');
     const brand = (el.dataset.cat      || '').toLowerCase();
-    const type  = (el.dataset.type     || 'celulares');
+    const type  = (el.dataset.type     || '');
 
     const okText  = !qVal      || model.includes(qVal);
-    const okCap   = !capVal    || cap === capVal;
+    const okCap   = !capVal    || caps.includes(capVal);
     const okBrand = !brandVal  || brand === brandVal;
     const okType  = !activeType|| type === activeType;
 
@@ -107,6 +96,83 @@ function render(){
   pager.style.display = (pages > 1) ? 'flex' : 'none';
 }
 
+function populateDynamicFilters(products) {
+  // Extraer capacidades únicas
+  const capacities = new Set();
+  products.forEach(p => {
+    if (p.variantes && p.variantes.length) {
+      p.variantes.forEach(v => {
+        if (v.almacenamiento || v.Almacenamiento) {
+          capacities.add(v.almacenamiento || v.Almacenamiento);
+        }
+      });
+    }
+  });
+
+  // Llenar dropdown de capacidades
+  const capList = document.querySelector('#capDD .dropdown-list');
+  capList.innerHTML = '<div class="dropdown-item" data-val="">Todas</div>';
+  Array.from(capacities).sort().forEach(cap => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.dataset.val = cap;
+    item.textContent = cap;
+    capList.appendChild(item);
+  });
+
+  // Extraer marcas únicas
+  const brands = new Set();
+  products.forEach(p => {
+    const marca = (p.Marca || p.marca || '').trim();
+    if (marca) brands.add(marca);
+  });
+
+  // Llenar dropdown de marcas
+  const brandList = document.querySelector('#brandDD .dropdown-list');
+  brandList.innerHTML = '<div class="dropdown-item" data-val="">Todas</div>';
+  Array.from(brands).sort().forEach(brand => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.dataset.val = brand.toLowerCase();
+    item.textContent = brand;
+    brandList.appendChild(item);
+  });
+
+  // Extraer categorías únicas
+  const categories = new Set();
+  products.forEach(p => {
+    const cat = (p.Categoria || p.categoria || '').trim();
+    if (cat) categories.add(cat);
+  });
+
+  // Llenar chips de categorías
+  const quickcats = document.querySelector('.quickcats');
+  quickcats.innerHTML = '<button class="chip is-active" data-type="">Todos</button>';
+  Array.from(categories).sort().forEach(cat => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.dataset.type = cat.toLowerCase();
+    chip.textContent = cat;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.quickcats .chip').forEach(x => x.classList.remove('is-active'));
+      chip.classList.add('is-active');
+      activeType = chip.dataset.type || '';
+      page = 1;
+      render();
+    });
+    quickcats.appendChild(chip);
+  });
+
+  // Reagregar listener al botón "Todos"
+  quickcats.querySelector('[data-type=""]').addEventListener('click', function() {
+    document.querySelectorAll('.quickcats .chip').forEach(x => x.classList.remove('is-active'));
+    this.classList.add('is-active');
+    activeType = '';
+    page = 1;
+    render();
+  });
+}
+
 async function loadProductsFromApi(){
   try {
     if (typeof axios === 'undefined') {
@@ -116,6 +182,10 @@ async function loadProductsFromApi(){
     }
     const res = await axios.get('/api/Producto');
     const products = Array.isArray(res.data) ? res.data : [];
+
+    // Poblar filtros dinámicos
+    populateDynamicFilters(products);
+
     grid.innerHTML = '';
     all = products.map(p => {
       const basePrice = (p.variantes && p.variantes.length) ? Math.min(...p.variantes.map(v => v.precio)) : null;
@@ -126,9 +196,11 @@ async function loadProductsFromApi(){
       const article = document.createElement('article');
       article.className = 'card glass-effect';
       article.dataset.model = `${p.Marca || p.marca || ''} ${p.Modelo || p.modelo || ''}`.trim();
-      article.dataset.capacity = '';
-      article.dataset.cat = (p.Categoria || p.categoria || '').toLowerCase();
-      article.dataset.type = 'celulares';
+      // Guardar todas las capacidades disponibles separadas por coma
+      const caps = p.variantes && p.variantes.length ? p.variantes.map(v => v.almacenamiento || v.Almacenamiento).filter(Boolean).join(',') : '';
+      article.dataset.capacity = caps;
+      article.dataset.cat = (p.Marca || p.marca || '').toLowerCase();
+      article.dataset.type = (p.Categoria || p.categoria || '').toLowerCase();
       const productId = p.id ?? p.Id;
       article.onclick = () => { window.location.href = `Publi.html?id=${productId}`; };
 
@@ -157,7 +229,6 @@ async function loadProductsFromApi(){
       grid.appendChild(article);
       return article;
     });
-    ensureTypeDataset();
     render();
   } catch (e) {
     console.error('Error cargando productos de la API:', e);
